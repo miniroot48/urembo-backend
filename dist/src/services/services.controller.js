@@ -20,11 +20,9 @@ let ServicesController = class ServicesController {
     constructor(servicesService) {
         this.servicesService = servicesService;
     }
-    async getAllServices(page, limit, category, isActive) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
+    async getAllServices(category, isActive) {
         const isActiveBool = isActive !== 'false';
-        return this.servicesService.getAllServices(pageNum, limitNum, category, isActiveBool);
+        return this.servicesService.getAllServices(category, isActiveBool);
     }
     async getServiceById(id) {
         return this.servicesService.getServiceById(id);
@@ -38,54 +36,38 @@ let ServicesController = class ServicesController {
     async deleteService(id, req) {
         return this.servicesService.deleteService(id, req.user.sub, req.user.role);
     }
-    async getUserServices(req, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.getUserServices(req.user.sub, pageNum, limitNum);
+    async getUserServices(req) {
+        return this.servicesService.getUserServices(req.user.sub);
     }
-    async getServicesByCategory(category, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.getServicesByCategory(category, pageNum, limitNum);
+    async getServicesByCategory(category) {
+        return this.servicesService.getServicesByCategory(category);
     }
-    async getServicesByCategoryId(categoryId, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.getServicesByCategoryId(categoryId, pageNum, limitNum);
+    async getServicesByCategoryId(categoryId) {
+        return this.servicesService.getServicesByCategoryId(categoryId);
     }
-    async searchServices(query, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.searchServices(query, pageNum, limitNum);
+    async searchServices(query) {
+        return this.servicesService.searchServices(query);
     }
-    async getServicesByDeliveryMethod(deliveryMethod, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.getServicesByDeliveryMethod(deliveryMethod, pageNum, limitNum);
+    async getServicesByDeliveryMethod(deliveryMethod) {
+        return this.servicesService.getServicesByDeliveryMethod(deliveryMethod);
     }
-    async getServicesByPriceRange(minPrice, maxPrice, page, limit) {
+    async getServicesByPriceRange(minPrice, maxPrice) {
         const minPriceNum = minPrice ? parseFloat(minPrice) : 0;
         const maxPriceNum = maxPrice ? parseFloat(maxPrice) : 999999;
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.getServicesByPriceRange(minPriceNum, maxPriceNum, pageNum, limitNum);
+        return this.servicesService.getServicesByPriceRange(minPriceNum, maxPriceNum);
     }
-    async getServicesByDuration(maxDuration, page, limit) {
+    async getServicesByDuration(maxDuration) {
         const maxDurationNum = parseInt(maxDuration, 10);
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.servicesService.getServicesByDuration(maxDurationNum, pageNum, limitNum);
+        return this.servicesService.getServicesByDuration(maxDurationNum);
     }
 };
 exports.ServicesController = ServicesController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __param(2, (0, common_1.Query)('category')),
-    __param(3, (0, common_1.Query)('isActive')),
+    __param(0, (0, common_1.Query)('category')),
+    __param(1, (0, common_1.Query)('isActive')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getAllServices", null);
 __decorate([
@@ -127,65 +109,51 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('my/services'),
     __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getUserServices", null);
 __decorate([
     (0, common_1.Get)('category/:category'),
     __param(0, (0, common_1.Param)('category')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getServicesByCategory", null);
 __decorate([
     (0, common_1.Get)('category-id/:categoryId'),
     __param(0, (0, common_1.Param)('categoryId')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getServicesByCategoryId", null);
 __decorate([
     (0, common_1.Get)('search'),
     __param(0, (0, common_1.Query)('q')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "searchServices", null);
 __decorate([
     (0, common_1.Get)('delivery/:deliveryMethod'),
     __param(0, (0, common_1.Param)('deliveryMethod')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getServicesByDeliveryMethod", null);
 __decorate([
     (0, common_1.Get)('price-range'),
     __param(0, (0, common_1.Query)('minPrice')),
     __param(1, (0, common_1.Query)('maxPrice')),
-    __param(2, (0, common_1.Query)('page')),
-    __param(3, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getServicesByPriceRange", null);
 __decorate([
     (0, common_1.Get)('duration/:maxDuration'),
     __param(0, (0, common_1.Param)('maxDuration')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getServicesByDuration", null);
 exports.ServicesController = ServicesController = __decorate([

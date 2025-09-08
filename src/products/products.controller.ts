@@ -22,16 +22,12 @@ export class ProductsController {
 
   @Get()
   async getAllProducts(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
     @Query('category') category?: string,
     @Query('isActive') isActive?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
     const isActiveBool = isActive !== 'false';
     
-    return this.productsService.getAllProducts(pageNum, limitNum, category, isActiveBool);
+    return this.productsService.getAllProducts(category, isActiveBool);
   }
 
   @Get(':id')
@@ -65,49 +61,29 @@ export class ProductsController {
   @Get('my/products')
   async getUserProducts(
     @Request() req,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.productsService.getUserProducts(req.user.sub, pageNum, limitNum);
+    return this.productsService.getUserProducts(req.user.sub);
   }
 
   @Get('category/:category')
   async getProductsByCategory(
     @Param('category') category: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.productsService.getProductsByCategory(category, pageNum, limitNum);
+    return this.productsService.getProductsByCategory(category);
   }
 
   @Get('manufacturer/:manufacturerId')
   async getProductsByManufacturer(
     @Param('manufacturerId') manufacturerId: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.productsService.getProductsByManufacturer(manufacturerId, pageNum, limitNum);
+    return this.productsService.getProductsByManufacturer(manufacturerId);
   }
 
   @Get('search')
   async searchProducts(
     @Query('q') query: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.productsService.searchProducts(query, pageNum, limitNum);
+    return this.productsService.searchProducts(query);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -134,13 +110,9 @@ export class ProductsController {
   @Get('low-stock')
   async getLowStockProducts(
     @Query('threshold') threshold?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
     const thresholdNum = threshold ? parseInt(threshold, 10) : 10;
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
     
-    return this.productsService.getLowStockProducts(thresholdNum, pageNum, limitNum);
+    return this.productsService.getLowStockProducts(thresholdNum);
   }
 }

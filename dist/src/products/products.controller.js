@@ -22,11 +22,9 @@ let ProductsController = class ProductsController {
     constructor(productsService) {
         this.productsService = productsService;
     }
-    async getAllProducts(page, limit, category, isActive) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
+    async getAllProducts(category, isActive) {
         const isActiveBool = isActive !== 'false';
-        return this.productsService.getAllProducts(pageNum, limitNum, category, isActiveBool);
+        return this.productsService.getAllProducts(category, isActiveBool);
     }
     async getProductById(id) {
         return this.productsService.getProductById(id);
@@ -40,25 +38,17 @@ let ProductsController = class ProductsController {
     async deleteProduct(id, req) {
         return this.productsService.deleteProduct(id, req.user.sub, req.user.role);
     }
-    async getUserProducts(req, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.productsService.getUserProducts(req.user.sub, pageNum, limitNum);
+    async getUserProducts(req) {
+        return this.productsService.getUserProducts(req.user.sub);
     }
-    async getProductsByCategory(category, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.productsService.getProductsByCategory(category, pageNum, limitNum);
+    async getProductsByCategory(category) {
+        return this.productsService.getProductsByCategory(category);
     }
-    async getProductsByManufacturer(manufacturerId, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.productsService.getProductsByManufacturer(manufacturerId, pageNum, limitNum);
+    async getProductsByManufacturer(manufacturerId) {
+        return this.productsService.getProductsByManufacturer(manufacturerId);
     }
-    async searchProducts(query, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.productsService.searchProducts(query, pageNum, limitNum);
+    async searchProducts(query) {
+        return this.productsService.searchProducts(query);
     }
     async updateStockQuantity(id, req, body) {
         return this.productsService.updateStockQuantity(id, req.user.sub, req.user.role, body.quantity);
@@ -66,22 +56,18 @@ let ProductsController = class ProductsController {
     async updateQcStatus(id, req, body) {
         return this.productsService.updateQcStatus(id, req.user.sub, req.user.role, body.qcStatus);
     }
-    async getLowStockProducts(threshold, page, limit) {
+    async getLowStockProducts(threshold) {
         const thresholdNum = threshold ? parseInt(threshold, 10) : 10;
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.productsService.getLowStockProducts(thresholdNum, pageNum, limitNum);
+        return this.productsService.getLowStockProducts(thresholdNum);
     }
 };
 exports.ProductsController = ProductsController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __param(2, (0, common_1.Query)('category')),
-    __param(3, (0, common_1.Query)('isActive')),
+    __param(0, (0, common_1.Query)('category')),
+    __param(1, (0, common_1.Query)('isActive')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getAllProducts", null);
 __decorate([
@@ -123,37 +109,29 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('my/products'),
     __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getUserProducts", null);
 __decorate([
     (0, common_1.Get)('category/:category'),
     __param(0, (0, common_1.Param)('category')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getProductsByCategory", null);
 __decorate([
     (0, common_1.Get)('manufacturer/:manufacturerId'),
     __param(0, (0, common_1.Param)('manufacturerId')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getProductsByManufacturer", null);
 __decorate([
     (0, common_1.Get)('search'),
     __param(0, (0, common_1.Query)('q')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "searchProducts", null);
 __decorate([
@@ -180,10 +158,8 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('low-stock'),
     __param(0, (0, common_1.Query)('threshold')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getLowStockProducts", null);
 exports.ProductsController = ProductsController = __decorate([

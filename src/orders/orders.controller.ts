@@ -22,14 +22,9 @@ export class OrdersController {
 
   @Get()
   async getAllOrders(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
     @Query('status') status?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.ordersService.getAllOrders(pageNum, limitNum, status as any);
+    return this.ordersService.getAllOrders(status as any);
   }
 
   @Get(':id')
@@ -63,13 +58,8 @@ export class OrdersController {
   @Get('my/orders')
   async getUserOrders(
     @Request() req,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.ordersService.getUserOrders(req.user.sub, pageNum, limitNum);
+    return this.ordersService.getUserOrders(req.user.sub);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -108,13 +98,8 @@ export class OrdersController {
   @Get('status/:status')
   async getOrdersByStatus(
     @Param('status') status: order_status,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.ordersService.getOrdersByStatus(status, pageNum, limitNum);
+    return this.ordersService.getOrdersByStatus(status);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -122,12 +107,7 @@ export class OrdersController {
   async getOrdersByUser(
     @Param('userId') userId: string,
     @Request() req,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.ordersService.getOrdersByUser(userId, req.user.role, pageNum, limitNum);
+    return this.ordersService.getOrdersByUser(userId, req.user.role);
   }
 }

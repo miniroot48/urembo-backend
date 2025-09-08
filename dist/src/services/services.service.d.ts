@@ -41,57 +41,49 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
-        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
+        durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        durationMinutes: number;
         deliveryMethod: string | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         categoryId: string | null;
         subcategoryId: string | null;
         actualServiceId: string | null;
         vendorId: string;
     }>;
-    getAllServices(page?: number, limit?: number, category?: string, isActive?: boolean): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-        } & {
+    getAllServices(category?: string, isActive?: boolean): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
     getServiceById(id: string): Promise<{
         vendor: {
             id: string;
@@ -101,18 +93,18 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
-        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
+        durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        durationMinutes: number;
         deliveryMethod: string | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         categoryId: string | null;
         subcategoryId: string | null;
         actualServiceId: string | null;
@@ -127,18 +119,18 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
-        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
+        durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        durationMinutes: number;
         deliveryMethod: string | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         categoryId: string | null;
         subcategoryId: string | null;
         actualServiceId: string | null;
@@ -146,257 +138,201 @@ export declare class ServicesService {
     }>;
     deleteService(id: string, userId: string, userRole: user_role): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
-        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
+        durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        durationMinutes: number;
         deliveryMethod: string | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         categoryId: string | null;
         subcategoryId: string | null;
         actualServiceId: string | null;
         vendorId: string;
     }>;
-    getUserServices(userId: string, page?: number, limit?: number): Promise<{
-        services: {
+    getUserServices(userId: string): Promise<{
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    }[]>;
+    getServicesByCategory(category: string): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        }[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
-    getServicesByCategory(category: string, page?: number, limit?: number): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-        } & {
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
+    getServicesByCategoryId(categoryId: string): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
-    getServicesByCategoryId(categoryId: string, page?: number, limit?: number): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-            serviceCategory: {
-                id: string;
-                name: string;
-                description: string;
-            };
-        } & {
+        serviceCategory: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            description: string;
         };
-    }>;
-    searchServices(query: string, page?: number, limit?: number): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-        } & {
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
+    searchServices(query: string): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
-    getServicesByDeliveryMethod(deliveryMethod: string, page?: number, limit?: number): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-        } & {
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
+    getServicesByDeliveryMethod(deliveryMethod: string): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
-    getServicesByPriceRange(minPrice: number, maxPrice: number, page?: number, limit?: number): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-        } & {
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
+    getServicesByPriceRange(minPrice: number, maxPrice: number): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
-    getServicesByDuration(maxDurationMinutes: number, page?: number, limit?: number): Promise<{
-        services: ({
-            vendor: {
-                id: string;
-                email: string;
-                fullName: string;
-                businessName: string;
-            };
-        } & {
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
+    getServicesByDuration(maxDurationMinutes: number): Promise<({
+        vendor: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
-            currency: string;
-            imageUrl: string | null;
-            category: string | null;
-            durationMinutes: number;
-            deliveryMethod: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            categoryId: string | null;
-            subcategoryId: string | null;
-            actualServiceId: string | null;
-            vendorId: string;
-        })[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
+            email: string;
+            fullName: string;
+            businessName: string;
         };
-    }>;
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        durationMinutes: number;
+        imageUrl: string | null;
+        category: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
 }

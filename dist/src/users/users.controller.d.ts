@@ -54,37 +54,99 @@ export declare class UsersController {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    getAllUsers(role?: user_role, page?: string, limit?: string): Promise<{
-        users: {
-            id: string;
-            email: string;
-            fullName: string;
-            phone: string;
-            avatarUrl: string;
-            role: import(".prisma/client").$Enums.user_role;
-            businessName: string;
-            businessDescription: string;
-            businessAddress: string;
-            businessPhone: string;
-            isVerified: boolean;
-            isSuspended: boolean;
-            suspendedAt: Date;
-            suspendedBy: string;
-            suspensionReason: string;
-            onboardingStatus: import(".prisma/client").$Enums.onboarding_status;
-            paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue;
-            paymentAccountType: string;
-            paymentDetailsVerified: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-        }[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
-        };
-    }>;
+    getAllUsers(role?: user_role): Promise<{
+        id: string;
+        email: string;
+        fullName: string;
+        phone: string;
+        avatarUrl: string;
+        role: import(".prisma/client").$Enums.user_role;
+        businessName: string;
+        businessDescription: string;
+        businessAddress: string;
+        businessPhone: string;
+        isVerified: boolean;
+        isSuspended: boolean;
+        suspendedAt: Date;
+        suspendedBy: string;
+        suspensionReason: string;
+        onboardingStatus: import(".prisma/client").$Enums.onboarding_status;
+        paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue;
+        paymentAccountType: string;
+        paymentDetailsVerified: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    getUnverifiedUsers(limit?: string): Promise<{
+        id: string;
+        email: string;
+        password: string;
+        fullName: string | null;
+        phone: string | null;
+        avatarUrl: string | null;
+        role: import(".prisma/client").$Enums.user_role;
+        businessName: string | null;
+        businessDescription: string | null;
+        businessAddress: string | null;
+        businessPhone: string | null;
+        isVerified: boolean;
+        isSuspended: boolean;
+        suspendedAt: Date | null;
+        suspendedBy: string | null;
+        suspensionReason: string | null;
+        onboardingStatus: import(".prisma/client").$Enums.onboarding_status | null;
+        paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
+        paymentAccountType: string | null;
+        paymentDetailsVerified: boolean | null;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+    }[]>;
+    getSuspendedUsers(): Promise<{
+        id: string;
+        email: string;
+        fullName: string;
+        phone: string;
+        role: import(".prisma/client").$Enums.user_role;
+        businessName: string;
+        isSuspended: boolean;
+        suspendedAt: Date;
+        suspendedBy: string;
+        suspensionReason: string;
+        createdAt: Date;
+    }[]>;
+    getUsersByRole(role: user_role): Promise<{
+        id: string;
+        email: string;
+        fullName: string;
+        phone: string;
+        avatarUrl: string;
+        role: import(".prisma/client").$Enums.user_role;
+        businessName: string;
+        businessDescription: string;
+        businessAddress: string;
+        businessPhone: string;
+        isVerified: boolean;
+        isSuspended: boolean;
+        suspendedAt: Date;
+        suspendedBy: string;
+        suspensionReason: string;
+        onboardingStatus: import(".prisma/client").$Enums.onboarding_status;
+        paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue;
+        paymentAccountType: string;
+        paymentDetailsVerified: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    getUsersByOnboardingStatus(status: onboarding_status): Promise<{
+        id: string;
+        email: string;
+        fullName: string;
+        phone: string;
+        role: import(".prisma/client").$Enums.user_role;
+        businessName: string;
+        onboardingStatus: import(".prisma/client").$Enums.onboarding_status;
+        createdAt: Date;
+    }[]>;
     getUserById(id: string): Promise<{
         id: string;
         email: string;
@@ -292,75 +354,5 @@ export declare class UsersController {
         paymentDetailsVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
-    }>;
-    getUsersByRole(role: user_role, page?: string, limit?: string): Promise<{
-        users: {
-            id: string;
-            email: string;
-            fullName: string;
-            phone: string;
-            avatarUrl: string;
-            role: import(".prisma/client").$Enums.user_role;
-            businessName: string;
-            businessDescription: string;
-            businessAddress: string;
-            businessPhone: string;
-            isVerified: boolean;
-            isSuspended: boolean;
-            suspendedAt: Date;
-            suspendedBy: string;
-            suspensionReason: string;
-            onboardingStatus: import(".prisma/client").$Enums.onboarding_status;
-            paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue;
-            paymentAccountType: string;
-            paymentDetailsVerified: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-        }[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
-        };
-    }>;
-    getSuspendedUsers(page?: string, limit?: string): Promise<{
-        users: {
-            id: string;
-            email: string;
-            fullName: string;
-            phone: string;
-            role: import(".prisma/client").$Enums.user_role;
-            businessName: string;
-            isSuspended: boolean;
-            suspendedAt: Date;
-            suspendedBy: string;
-            suspensionReason: string;
-            createdAt: Date;
-        }[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
-        };
-    }>;
-    getUsersByOnboardingStatus(status: onboarding_status, page?: string, limit?: string): Promise<{
-        users: {
-            id: string;
-            email: string;
-            fullName: string;
-            phone: string;
-            role: import(".prisma/client").$Enums.user_role;
-            businessName: string;
-            onboardingStatus: import(".prisma/client").$Enums.onboarding_status;
-            createdAt: Date;
-        }[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            pages: number;
-        };
     }>;
 }

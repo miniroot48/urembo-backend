@@ -32,10 +32,21 @@ let UsersController = class UsersController {
     async updateProfile(req, updateData) {
         return this.usersService.updateProfile(req.user.sub, updateData);
     }
-    async getAllUsers(role, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.usersService.getAllUsers(role, pageNum, limitNum);
+    async getAllUsers(role) {
+        return this.usersService.getAllUsers(role);
+    }
+    async getUnverifiedUsers(limit) {
+        const limitNum = limit ? parseInt(limit, 10) : undefined;
+        return this.usersService.getUnverifiedUsers(limitNum);
+    }
+    async getSuspendedUsers() {
+        return this.usersService.getSuspendedUsers();
+    }
+    async getUsersByRole(role) {
+        return this.usersService.getUsersByRole(role);
+    }
+    async getUsersByOnboardingStatus(status) {
+        return this.usersService.getUsersByOnboardingStatus(status);
     }
     async getUserById(id) {
         return this.usersService.findById(id);
@@ -64,21 +75,6 @@ let UsersController = class UsersController {
     async verifyPaymentDetails(id) {
         return this.usersService.verifyPaymentDetails(id);
     }
-    async getUsersByRole(role, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.usersService.getUsersByRole(role, pageNum, limitNum);
-    }
-    async getSuspendedUsers(page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.usersService.getSuspendedUsers(pageNum, limitNum);
-    }
-    async getUsersByOnboardingStatus(status, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.usersService.getUsersByOnboardingStatus(status, pageNum, limitNum);
-    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -99,12 +95,37 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('role')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getAllUsers", null);
+__decorate([
+    (0, common_1.Get)('unverified'),
+    __param(0, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUnverifiedUsers", null);
+__decorate([
+    (0, common_1.Get)('suspended'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getSuspendedUsers", null);
+__decorate([
+    (0, common_1.Get)('role/:role'),
+    __param(0, (0, common_1.Param)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUsersByRole", null);
+__decorate([
+    (0, common_1.Get)('onboarding/:status'),
+    __param(0, (0, common_1.Param)('status')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUsersByOnboardingStatus", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -172,32 +193,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "verifyPaymentDetails", null);
-__decorate([
-    (0, common_1.Get)('role/:role'),
-    __param(0, (0, common_1.Param)('role')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "getUsersByRole", null);
-__decorate([
-    (0, common_1.Get)('suspended'),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "getSuspendedUsers", null);
-__decorate([
-    (0, common_1.Get)('onboarding/:status'),
-    __param(0, (0, common_1.Param)('status')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "getUsersByOnboardingStatus", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

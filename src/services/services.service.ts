@@ -74,43 +74,28 @@ export class ServicesService {
     });
   }
 
-  async getAllServices(page = 1, limit = 10, category?: string, isActive = true) {
-    const skip = (page - 1) * limit;
-    
+  async getAllServices(category?: string, isActive = true) {
     const where: any = { isActive };
     if (category) {
       where.category = category;
     }
     
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
+    const services = await this.prisma.service.findMany({
+      where,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.service.count({ where }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return services;
   }
 
   async getServiceById(id: string) {
@@ -188,314 +173,165 @@ export class ServicesService {
     });
   }
 
-  async getUserServices(userId: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: { vendorId: userId },
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.service.count({ where: { vendorId: userId } }),
-    ]);
+  async getUserServices(userId: string) {
+    const services = await this.prisma.service.findMany({
+      where: { vendorId: userId },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    };
+    return services;
   }
 
-  async getServicesByCategory(category: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: { 
-          category,
-          isActive: true,
-        },
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
+  async getServicesByCategory(category: string) {
+    const services = await this.prisma.service.findMany({
+      where: { 
+        category,
+        isActive: true,
+      },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.service.count({ 
-        where: { 
-          category,
-          isActive: true,
-        } 
-      }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return services;
   }
 
-  async getServicesByCategoryId(categoryId: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: { 
-          categoryId,
-          isActive: true,
-        },
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
-          },
-          serviceCategory: {
-            select: {
-              id: true,
-              name: true,
-              description: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.service.count({ 
-        where: { 
-          categoryId,
-          isActive: true,
-        } 
-      }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+  async getServicesByCategoryId(categoryId: string) {
+    const services = await this.prisma.service.findMany({
+      where: { 
+        categoryId,
+        isActive: true,
       },
-    };
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+        serviceCategory: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return services;
   }
 
-  async searchServices(query: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: {
-          AND: [
-            { isActive: true },
-            {
-              OR: [
-                { name: { contains: query, mode: 'insensitive' } },
-                { description: { contains: query, mode: 'insensitive' } },
-                { category: { contains: query, mode: 'insensitive' } },
-                { deliveryMethod: { contains: query, mode: 'insensitive' } },
-              ],
-            },
-          ],
-        },
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
+  async searchServices(query: string) {
+    const services = await this.prisma.service.findMany({
+      where: {
+        AND: [
+          { isActive: true },
+          {
+            OR: [
+              { name: { contains: query, mode: 'insensitive' } },
+              { description: { contains: query, mode: 'insensitive' } },
+              { category: { contains: query, mode: 'insensitive' } },
+              { deliveryMethod: { contains: query, mode: 'insensitive' } },
+            ],
+          },
+        ],
+      },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.service.count({
-        where: {
-          AND: [
-            { isActive: true },
-            {
-              OR: [
-                { name: { contains: query, mode: 'insensitive' } },
-                { description: { contains: query, mode: 'insensitive' } },
-                { category: { contains: query, mode: 'insensitive' } },
-                { deliveryMethod: { contains: query, mode: 'insensitive' } },
-              ],
-            },
-          ],
-        },
-      }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return services;
   }
 
-  async getServicesByDeliveryMethod(deliveryMethod: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: { 
-          deliveryMethod,
-          isActive: true,
-        },
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
+  async getServicesByDeliveryMethod(deliveryMethod: string) {
+    const services = await this.prisma.service.findMany({
+      where: { 
+        deliveryMethod,
+        isActive: true,
+      },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.service.count({ 
-        where: { 
-          deliveryMethod,
-          isActive: true,
-        } 
-      }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return services;
   }
 
-  async getServicesByPriceRange(minPrice: number, maxPrice: number, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: { 
-          price: {
-            gte: minPrice,
-            lte: maxPrice,
-          },
-          isActive: true,
+  async getServicesByPriceRange(minPrice: number, maxPrice: number) {
+    const services = await this.prisma.service.findMany({
+      where: { 
+        price: {
+          gte: minPrice,
+          lte: maxPrice,
         },
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
-          },
-        },
-        orderBy: { price: 'asc' },
-      }),
-      this.prisma.service.count({ 
-        where: { 
-          price: {
-            gte: minPrice,
-            lte: maxPrice,
-          },
-          isActive: true,
-        } 
-      }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+        isActive: true,
       },
-    };
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { price: 'asc' },
+    });
+
+    return services;
   }
 
-  async getServicesByDuration(maxDurationMinutes: number, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [services, total] = await Promise.all([
-      this.prisma.service.findMany({
-        where: { 
-          durationMinutes: {
-            lte: maxDurationMinutes,
-          },
-          isActive: true,
+  async getServicesByDuration(maxDurationMinutes: number) {
+    const services = await this.prisma.service.findMany({
+      where: { 
+        durationMinutes: {
+          lte: maxDurationMinutes,
         },
-        skip,
-        take: limit,
-        include: {
-          vendor: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-              businessName: true,
-            },
-          },
-        },
-        orderBy: { durationMinutes: 'asc' },
-      }),
-      this.prisma.service.count({ 
-        where: { 
-          durationMinutes: {
-            lte: maxDurationMinutes,
-          },
-          isActive: true,
-        } 
-      }),
-    ]);
-
-    return {
-      services,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+        isActive: true,
       },
-    };
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { durationMinutes: 'asc' },
+    });
+
+    return services;
   }
 }

@@ -101,69 +101,54 @@ export class OrdersService {
     return this.getOrderById(order.id);
   }
 
-  async getAllOrders(page = 1, limit = 10, status?: order_status) {
-    const skip = (page - 1) * limit;
-    
+  async getAllOrders(status?: order_status) {
     const where = status ? { status } : {};
     
-    const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-            },
+    const orders = await this.prisma.order.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
           },
-          orderItems: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true,
-                },
-              },
-            },
-          },
-          serviceAppointments: {
-            include: {
-              service: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true,
-                },
-              },
-              vendor: {
-                select: {
-                  id: true,
-                  email: true,
-                  fullName: true,
-                  businessName: true,
-                },
+        },
+        orderItems: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
               },
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.order.count({ where }),
-    ]);
-
-    return {
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+        serviceAppointments: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+              },
+            },
+            vendor: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true,
+                businessName: true,
+              },
+            },
+          },
+        },
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders;
   }
 
   async getOrderById(id: string) {
@@ -286,62 +271,47 @@ export class OrdersService {
     });
   }
 
-  async getUserOrders(userId: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
-        where: { userId },
-        skip,
-        take: limit,
-        include: {
-          orderItems: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true,
-                  imageUrl: true,
-                },
-              },
-            },
-          },
-          serviceAppointments: {
-            include: {
-              service: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true,
-                  imageUrl: true,
-                },
-              },
-              vendor: {
-                select: {
-                  id: true,
-                  email: true,
-                  fullName: true,
-                  businessName: true,
-                },
+  async getUserOrders(userId: string) {
+    const orders = await this.prisma.order.findMany({
+      where: { userId },
+      include: {
+        orderItems: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                imageUrl: true,
               },
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.order.count({ where: { userId } }),
-    ]);
-
-    return {
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+        serviceAppointments: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                imageUrl: true,
+              },
+            },
+            vendor: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true,
+                businessName: true,
+              },
+            },
+          },
+        },
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders;
   }
 
   async confirmOrder(id: string, userId: string, userRole: string) {
@@ -454,53 +424,36 @@ export class OrdersService {
     });
   }
 
-  async getOrdersByStatus(status: order_status, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
-    const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
-        where: { status },
-        skip,
-        take: limit,
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-            },
+  async getOrdersByStatus(status: order_status) {
+    const orders = await this.prisma.order.findMany({
+      where: { status },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
           },
-          orderItems: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true,
-                },
+        },
+        orderItems: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
               },
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.order.count({ where: { status } }),
-    ]);
-
-    return {
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders;
   }
 
-  async getOrdersByUser(userId: string, userRole: string, page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    
+  async getOrdersByUser(userId: string, userRole: string) {
     let where: any = {};
     
     // Different users see different orders based on their role
@@ -524,44 +477,31 @@ export class OrdersService {
         where = { userId };
     }
     
-    const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              fullName: true,
-            },
+    const orders = await this.prisma.order.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
           },
-          orderItems: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  price: true,
-                },
+        },
+        orderItems: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
               },
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.order.count({ where }),
-    ]);
-
-    return {
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
       },
-    };
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders;
   }
 }

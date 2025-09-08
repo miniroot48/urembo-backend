@@ -88,50 +88,36 @@ let UsersService = class UsersService {
             },
         });
     }
-    async getAllUsers(role, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
+    async getAllUsers(role) {
         const where = role ? { role } : {};
-        const [users, total] = await Promise.all([
-            this.prisma.profile.findMany({
-                where,
-                skip,
-                take: limit,
-                select: {
-                    id: true,
-                    email: true,
-                    fullName: true,
-                    phone: true,
-                    avatarUrl: true,
-                    role: true,
-                    businessName: true,
-                    businessDescription: true,
-                    businessAddress: true,
-                    businessPhone: true,
-                    isVerified: true,
-                    isSuspended: true,
-                    suspendedAt: true,
-                    suspendedBy: true,
-                    suspensionReason: true,
-                    onboardingStatus: true,
-                    paymentAccountDetails: true,
-                    paymentAccountType: true,
-                    paymentDetailsVerified: true,
-                    createdAt: true,
-                    updatedAt: true,
-                },
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.profile.count({ where }),
-        ]);
-        return {
-            users,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
+        const users = await this.prisma.profile.findMany({
+            where,
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                phone: true,
+                avatarUrl: true,
+                role: true,
+                businessName: true,
+                businessDescription: true,
+                businessAddress: true,
+                businessPhone: true,
+                isVerified: true,
+                isSuspended: true,
+                suspendedAt: true,
+                suspendedBy: true,
+                suspensionReason: true,
+                onboardingStatus: true,
+                paymentAccountDetails: true,
+                paymentAccountType: true,
+                paymentDetailsVerified: true,
+                createdAt: true,
+                updatedAt: true,
             },
-        };
+            orderBy: { createdAt: 'desc' },
+        });
+        return users;
     }
     async verifyUser(id) {
         return this.prisma.profile.update({
@@ -205,6 +191,12 @@ let UsersService = class UsersService {
         });
     }
     async updateOnboardingStatus(id, status) {
+        if (status === client_1.onboarding_status.approved) {
+            return this.prisma.profile.update({
+                where: { id },
+                data: { isVerified: true, onboardingStatus: status },
+            });
+        }
         return this.prisma.profile.update({
             where: { id },
             data: { onboardingStatus: status },
@@ -226,73 +218,79 @@ let UsersService = class UsersService {
             data: { paymentDetailsVerified: true },
         });
     }
-    async getUsersByRole(role, page = 1, limit = 10) {
-        return this.getAllUsers(role, page, limit);
+    async getUsersByRole(role) {
+        return this.getAllUsers(role);
     }
-    async getSuspendedUsers(page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [users, total] = await Promise.all([
-            this.prisma.profile.findMany({
-                where: { isSuspended: true },
-                skip,
-                take: limit,
-                select: {
-                    id: true,
-                    email: true,
-                    fullName: true,
-                    phone: true,
-                    role: true,
-                    businessName: true,
-                    isSuspended: true,
-                    suspendedAt: true,
-                    suspendedBy: true,
-                    suspensionReason: true,
-                    createdAt: true,
-                },
-                orderBy: { suspendedAt: 'desc' },
-            }),
-            this.prisma.profile.count({ where: { isSuspended: true } }),
-        ]);
-        return {
-            users,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
+    async getSuspendedUsers() {
+        const users = await this.prisma.profile.findMany({
+            where: { isSuspended: true },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                phone: true,
+                role: true,
+                businessName: true,
+                isSuspended: true,
+                suspendedAt: true,
+                suspendedBy: true,
+                suspensionReason: true,
+                createdAt: true,
             },
-        };
+            orderBy: { suspendedAt: 'desc' },
+        });
+        return users;
     }
-    async getUsersByOnboardingStatus(status, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [users, total] = await Promise.all([
-            this.prisma.profile.findMany({
-                where: { onboardingStatus: status },
-                skip,
-                take: limit,
-                select: {
-                    id: true,
-                    email: true,
-                    fullName: true,
-                    phone: true,
-                    role: true,
-                    businessName: true,
-                    onboardingStatus: true,
-                    createdAt: true,
-                },
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.profile.count({ where: { onboardingStatus: status } }),
-        ]);
-        return {
-            users,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
+    async getUsersByOnboardingStatus(status) {
+        const users = await this.prisma.profile.findMany({
+            where: { onboardingStatus: status },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                phone: true,
+                role: true,
+                businessName: true,
+                onboardingStatus: true,
+                createdAt: true,
             },
+            orderBy: { createdAt: 'desc' },
+        });
+        return users;
+    }
+    async getUnverifiedUsers(limit) {
+        const queryOptions = {
+            where: { isVerified: false },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                phone: true,
+                avatarUrl: true,
+                role: true,
+                businessName: true,
+                businessDescription: true,
+                businessAddress: true,
+                businessPhone: true,
+                isVerified: true,
+                isSuspended: true,
+                suspendedAt: true,
+                suspendedBy: true,
+                suspensionReason: true,
+                onboardingStatus: true,
+                paymentAccountDetails: true,
+                paymentAccountType: true,
+                paymentDetailsVerified: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
         };
+        if (limit && limit > 0) {
+            queryOptions.take = limit;
+        }
+        console.log('queryOptions*******************************', this.prisma.profile.findMany(queryOptions));
+        return this.prisma.profile.findMany(queryOptions);
     }
 };
 exports.UsersService = UsersService;

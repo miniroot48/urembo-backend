@@ -38,13 +38,33 @@ export class UsersController {
   @Get()
   async getAllUsers(
     @Query('role') role?: user_role,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.usersService.getAllUsers(role, pageNum, limitNum);
+    return this.usersService.getAllUsers(role);
+  }
+
+  @Get('unverified')
+  async getUnverifiedUsers(@Query('limit') limit?: string) {
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+    return this.usersService.getUnverifiedUsers(limitNum);
+  }
+
+  @Get('suspended')
+  async getSuspendedUsers() {
+    return this.usersService.getSuspendedUsers();
+  }
+
+  @Get('role/:role')
+  async getUsersByRole(
+    @Param('role') role: user_role,
+  ) {
+    return this.usersService.getUsersByRole(role);
+  }
+
+  @Get('onboarding/:status')
+  async getUsersByOnboardingStatus(
+    @Param('status') status: onboarding_status,
+  ) {
+    return this.usersService.getUsersByOnboardingStatus(status);
   }
 
   @Get(':id')
@@ -106,38 +126,4 @@ export class UsersController {
     return this.usersService.verifyPaymentDetails(id);
   }
 
-  @Get('role/:role')
-  async getUsersByRole(
-    @Param('role') role: user_role,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.usersService.getUsersByRole(role, pageNum, limitNum);
-  }
-
-  @Get('suspended')
-  async getSuspendedUsers(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.usersService.getSuspendedUsers(pageNum, limitNum);
-  }
-
-  @Get('onboarding/:status')
-  async getUsersByOnboardingStatus(
-    @Param('status') status: onboarding_status,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.usersService.getUsersByOnboardingStatus(status, pageNum, limitNum);
-  }
 }

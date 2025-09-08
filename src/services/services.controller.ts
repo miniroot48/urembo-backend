@@ -19,16 +19,12 @@ export class ServicesController {
 
   @Get()
   async getAllServices(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
     @Query('category') category?: string,
     @Query('isActive') isActive?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
     const isActiveBool = isActive !== 'false';
     
-    return this.servicesService.getAllServices(pageNum, limitNum, category, isActiveBool);
+    return this.servicesService.getAllServices(category, isActiveBool);
   }
 
   @Get(':id')
@@ -62,88 +58,55 @@ export class ServicesController {
   @Get('my/services')
   async getUserServices(
     @Request() req,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.servicesService.getUserServices(req.user.sub, pageNum, limitNum);
+    return this.servicesService.getUserServices(req.user.sub);
   }
 
   @Get('category/:category')
   async getServicesByCategory(
     @Param('category') category: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.servicesService.getServicesByCategory(category, pageNum, limitNum);
+    return this.servicesService.getServicesByCategory(category);
   }
 
   @Get('category-id/:categoryId')
   async getServicesByCategoryId(
     @Param('categoryId') categoryId: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.servicesService.getServicesByCategoryId(categoryId, pageNum, limitNum);
+    return this.servicesService.getServicesByCategoryId(categoryId);
   }
 
   @Get('search')
   async searchServices(
     @Query('q') query: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.servicesService.searchServices(query, pageNum, limitNum);
+    return this.servicesService.searchServices(query);
   }
 
   @Get('delivery/:deliveryMethod')
   async getServicesByDeliveryMethod(
     @Param('deliveryMethod') deliveryMethod: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    return this.servicesService.getServicesByDeliveryMethod(deliveryMethod, pageNum, limitNum);
+    return this.servicesService.getServicesByDeliveryMethod(deliveryMethod);
   }
 
   @Get('price-range')
   async getServicesByPriceRange(
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
     const minPriceNum = minPrice ? parseFloat(minPrice) : 0;
     const maxPriceNum = maxPrice ? parseFloat(maxPrice) : 999999;
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
     
-    return this.servicesService.getServicesByPriceRange(minPriceNum, maxPriceNum, pageNum, limitNum);
+    return this.servicesService.getServicesByPriceRange(minPriceNum, maxPriceNum);
   }
 
   @Get('duration/:maxDuration')
   async getServicesByDuration(
     @Param('maxDuration') maxDuration: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
   ) {
     const maxDurationNum = parseInt(maxDuration, 10);
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
     
-    return this.servicesService.getServicesByDuration(maxDurationNum, pageNum, limitNum);
+    return this.servicesService.getServicesByDuration(maxDurationNum);
   }
 }

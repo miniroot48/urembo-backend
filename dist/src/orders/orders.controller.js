@@ -23,10 +23,8 @@ let OrdersController = class OrdersController {
     constructor(ordersService) {
         this.ordersService = ordersService;
     }
-    async getAllOrders(page, limit, status) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.ordersService.getAllOrders(pageNum, limitNum, status);
+    async getAllOrders(status) {
+        return this.ordersService.getAllOrders(status);
     }
     async getOrderById(id) {
         return this.ordersService.getOrderById(id);
@@ -40,10 +38,8 @@ let OrdersController = class OrdersController {
     async updateOrder(id, req, updateOrderDto) {
         return this.ordersService.updateOrder(id, req.user.sub, req.user.role, updateOrderDto);
     }
-    async getUserOrders(req, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.ordersService.getUserOrders(req.user.sub, pageNum, limitNum);
+    async getUserOrders(req) {
+        return this.ordersService.getUserOrders(req.user.sub);
     }
     async confirmOrder(id, req) {
         return this.ordersService.confirmOrder(id, req.user.sub, req.user.role);
@@ -57,25 +53,19 @@ let OrdersController = class OrdersController {
     async disputeOrder(id, req, body) {
         return this.ordersService.disputeOrder(id, req.user.sub, body.reason, body.evidence);
     }
-    async getOrdersByStatus(status, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.ordersService.getOrdersByStatus(status, pageNum, limitNum);
+    async getOrdersByStatus(status) {
+        return this.ordersService.getOrdersByStatus(status);
     }
-    async getOrdersByUser(userId, req, page, limit) {
-        const pageNum = page ? parseInt(page, 10) : 1;
-        const limitNum = limit ? parseInt(limit, 10) : 10;
-        return this.ordersService.getOrdersByUser(userId, req.user.role, pageNum, limitNum);
+    async getOrdersByUser(userId, req) {
+        return this.ordersService.getOrdersByUser(userId, req.user.role);
     }
 };
 exports.OrdersController = OrdersController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __param(2, (0, common_1.Query)('status')),
+    __param(0, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getAllOrders", null);
 __decorate([
@@ -115,10 +105,8 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('my/orders'),
     __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getUserOrders", null);
 __decorate([
@@ -163,10 +151,8 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('status/:status'),
     __param(0, (0, common_1.Param)('status')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrdersByStatus", null);
 __decorate([
@@ -174,10 +160,8 @@ __decorate([
     (0, common_1.Get)('user/:userId'),
     __param(0, (0, common_1.Param)('userId')),
     __param(1, (0, common_1.Request)()),
-    __param(2, (0, common_1.Query)('page')),
-    __param(3, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, String, String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrdersByUser", null);
 exports.OrdersController = OrdersController = __decorate([

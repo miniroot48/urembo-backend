@@ -56,40 +56,26 @@ let ProductsService = class ProductsService {
             },
         });
     }
-    async getAllProducts(page = 1, limit = 10, category, isActive = true) {
-        const skip = (page - 1) * limit;
+    async getAllProducts(category, isActive = true) {
         const where = { isActive };
         if (category) {
             where.category = category;
         }
-        const [products, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where,
-                skip,
-                take: limit,
-                include: {
-                    retailer: {
-                        select: {
-                            id: true,
-                            email: true,
-                            fullName: true,
-                            businessName: true,
-                        },
+        const products = await this.prisma.product.findMany({
+            where,
+            include: {
+                retailer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
                     },
                 },
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.product.count({ where }),
-        ]);
-        return {
-            products,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
             },
-        };
+            orderBy: { createdAt: 'desc' },
+        });
+        return products;
     }
     async getProductById(id) {
         const product = await this.prisma.product.findUnique({
@@ -166,165 +152,83 @@ let ProductsService = class ProductsService {
             where: { id },
         });
     }
-    async getUserProducts(userId, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [products, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where: { retailerId: userId },
-                skip,
-                take: limit,
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.product.count({ where: { retailerId: userId } }),
-        ]);
-        return {
-            products,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
-            },
-        };
+    async getUserProducts(userId) {
+        const products = await this.prisma.product.findMany({
+            where: { retailerId: userId },
+            orderBy: { createdAt: 'desc' },
+        });
+        return products;
     }
-    async getProductsByCategory(category, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [products, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where: {
-                    category,
-                    isActive: true,
-                },
-                skip,
-                take: limit,
-                include: {
-                    retailer: {
-                        select: {
-                            id: true,
-                            email: true,
-                            fullName: true,
-                            businessName: true,
-                        },
+    async getProductsByCategory(category) {
+        const products = await this.prisma.product.findMany({
+            where: {
+                category,
+                isActive: true,
+            },
+            include: {
+                retailer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
                     },
                 },
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.product.count({
-                where: {
-                    category,
-                    isActive: true,
-                }
-            }),
-        ]);
-        return {
-            products,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
             },
-        };
+            orderBy: { createdAt: 'desc' },
+        });
+        return products;
     }
-    async getProductsByManufacturer(manufacturerId, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [products, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where: {
-                    manufacturerId,
-                    isActive: true,
-                },
-                skip,
-                take: limit,
-                include: {
-                    retailer: {
-                        select: {
-                            id: true,
-                            email: true,
-                            fullName: true,
-                            businessName: true,
-                        },
+    async getProductsByManufacturer(manufacturerId) {
+        const products = await this.prisma.product.findMany({
+            where: {
+                manufacturerId,
+                isActive: true,
+            },
+            include: {
+                retailer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
                     },
                 },
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.product.count({
-                where: {
-                    manufacturerId,
-                    isActive: true,
-                }
-            }),
-        ]);
-        return {
-            products,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
             },
-        };
+            orderBy: { createdAt: 'desc' },
+        });
+        return products;
     }
-    async searchProducts(query, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [products, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where: {
-                    AND: [
-                        { isActive: true },
-                        {
-                            OR: [
-                                { name: { contains: query, mode: 'insensitive' } },
-                                { description: { contains: query, mode: 'insensitive' } },
-                                { category: { contains: query, mode: 'insensitive' } },
-                                { subcategory: { contains: query, mode: 'insensitive' } },
-                                { sku: { contains: query, mode: 'insensitive' } },
-                                { tags: { has: query } },
-                            ],
-                        },
-                    ],
-                },
-                skip,
-                take: limit,
-                include: {
-                    retailer: {
-                        select: {
-                            id: true,
-                            email: true,
-                            fullName: true,
-                            businessName: true,
-                        },
+    async searchProducts(query) {
+        const products = await this.prisma.product.findMany({
+            where: {
+                AND: [
+                    { isActive: true },
+                    {
+                        OR: [
+                            { name: { contains: query, mode: 'insensitive' } },
+                            { description: { contains: query, mode: 'insensitive' } },
+                            { category: { contains: query, mode: 'insensitive' } },
+                            { subcategory: { contains: query, mode: 'insensitive' } },
+                            { sku: { contains: query, mode: 'insensitive' } },
+                            { tags: { has: query } },
+                        ],
+                    },
+                ],
+            },
+            include: {
+                retailer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
                     },
                 },
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.product.count({
-                where: {
-                    AND: [
-                        { isActive: true },
-                        {
-                            OR: [
-                                { name: { contains: query, mode: 'insensitive' } },
-                                { description: { contains: query, mode: 'insensitive' } },
-                                { category: { contains: query, mode: 'insensitive' } },
-                                { subcategory: { contains: query, mode: 'insensitive' } },
-                                { sku: { contains: query, mode: 'insensitive' } },
-                                { tags: { has: query } },
-                            ],
-                        },
-                    ],
-                },
-            }),
-        ]);
-        return {
-            products,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
             },
-        };
+            orderBy: { createdAt: 'desc' },
+        });
+        return products;
     }
     async updateStockQuantity(id, userId, userRole, quantity) {
         const product = await this.getProductById(id);
@@ -346,44 +250,25 @@ let ProductsService = class ProductsService {
             data: { qcStatus },
         });
     }
-    async getLowStockProducts(threshold = 10, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [products, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where: {
-                    stockQuantity: { lte: threshold },
-                    isActive: true,
-                },
-                skip,
-                take: limit,
-                include: {
-                    retailer: {
-                        select: {
-                            id: true,
-                            email: true,
-                            fullName: true,
-                            businessName: true,
-                        },
+    async getLowStockProducts(threshold = 10) {
+        const products = await this.prisma.product.findMany({
+            where: {
+                stockQuantity: { lte: threshold },
+                isActive: true,
+            },
+            include: {
+                retailer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
                     },
                 },
-                orderBy: { stockQuantity: 'asc' },
-            }),
-            this.prisma.product.count({
-                where: {
-                    stockQuantity: { lte: threshold },
-                    isActive: true,
-                },
-            }),
-        ]);
-        return {
-            products,
-            pagination: {
-                page,
-                limit,
-                total,
-                pages: Math.ceil(total / limit),
             },
-        };
+            orderBy: { stockQuantity: 'asc' },
+        });
+        return products;
     }
 };
 exports.ProductsService = ProductsService;
