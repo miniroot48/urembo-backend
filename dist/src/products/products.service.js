@@ -28,8 +28,8 @@ let ProductsService = class ProductsService {
             currency: createProductDto.currency || 'USD',
             stockQuantity: createProductDto.stockQuantity || 0,
             imageUrl: createProductDto.imageUrl,
-            category: createProductDto.category,
-            subcategory: createProductDto.subcategory,
+            categoryId: createProductDto.categoryId,
+            subcategoryId: createProductDto.subcategoryId,
             sku: createProductDto.sku,
             tags: createProductDto.tags || [],
             qcStatus: createProductDto.qcStatus,
@@ -53,13 +53,29 @@ let ProductsService = class ProductsService {
                         businessName: true,
                     },
                 },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
             },
         });
     }
-    async getAllProducts(category, isActive = true) {
+    async getAllProducts(categoryId, isActive = true) {
         const where = { isActive };
-        if (category) {
-            where.category = category;
+        if (categoryId) {
+            where.categoryId = categoryId;
         }
         const products = await this.prisma.product.findMany({
             where,
@@ -70,6 +86,22 @@ let ProductsService = class ProductsService {
                         email: true,
                         fullName: true,
                         businessName: true,
+                    },
+                },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
                     },
                 },
             },
@@ -87,6 +119,22 @@ let ProductsService = class ProductsService {
                         email: true,
                         fullName: true,
                         businessName: true,
+                    },
+                },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
                     },
                 },
             },
@@ -114,10 +162,10 @@ let ProductsService = class ProductsService {
             updateData.stockQuantity = updateProductDto.stockQuantity;
         if (updateProductDto.imageUrl !== undefined)
             updateData.imageUrl = updateProductDto.imageUrl;
-        if (updateProductDto.category !== undefined)
-            updateData.category = updateProductDto.category;
-        if (updateProductDto.subcategory !== undefined)
-            updateData.subcategory = updateProductDto.subcategory;
+        if (updateProductDto.categoryId !== undefined)
+            updateData.categoryId = updateProductDto.categoryId;
+        if (updateProductDto.subcategoryId !== undefined)
+            updateData.subcategoryId = updateProductDto.subcategoryId;
         if (updateProductDto.sku !== undefined)
             updateData.sku = updateProductDto.sku;
         if (updateProductDto.tags !== undefined)
@@ -140,6 +188,22 @@ let ProductsService = class ProductsService {
                         businessName: true,
                     },
                 },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
             },
         });
     }
@@ -159,10 +223,10 @@ let ProductsService = class ProductsService {
         });
         return products;
     }
-    async getProductsByCategory(category) {
+    async getProductsByCategory(categoryId) {
         const products = await this.prisma.product.findMany({
             where: {
-                category,
+                categoryId,
                 isActive: true,
             },
             include: {
@@ -172,6 +236,22 @@ let ProductsService = class ProductsService {
                         email: true,
                         fullName: true,
                         businessName: true,
+                    },
+                },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
                     },
                 },
             },
@@ -194,6 +274,22 @@ let ProductsService = class ProductsService {
                         businessName: true,
                     },
                 },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -208,8 +304,16 @@ let ProductsService = class ProductsService {
                         OR: [
                             { name: { contains: query, mode: 'insensitive' } },
                             { description: { contains: query, mode: 'insensitive' } },
-                            { category: { contains: query, mode: 'insensitive' } },
-                            { subcategory: { contains: query, mode: 'insensitive' } },
+                            {
+                                category: {
+                                    name: { contains: query, mode: 'insensitive' }
+                                }
+                            },
+                            {
+                                subcategory: {
+                                    name: { contains: query, mode: 'insensitive' }
+                                }
+                            },
                             { sku: { contains: query, mode: 'insensitive' } },
                             { tags: { has: query } },
                         ],
@@ -223,6 +327,22 @@ let ProductsService = class ProductsService {
                         email: true,
                         fullName: true,
                         businessName: true,
+                    },
+                },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
                     },
                 },
             },
@@ -265,10 +385,118 @@ let ProductsService = class ProductsService {
                         businessName: true,
                     },
                 },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
             },
             orderBy: { stockQuantity: 'asc' },
         });
         return products;
+    }
+    async getProductCategories() {
+        return this.prisma.productCategory.findMany({
+            where: { isActive: true },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                slug: true,
+                imageUrl: true,
+                level: true,
+                parentId: true,
+                position: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                parent: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                    },
+                },
+                children: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        level: true,
+                        position: true,
+                    },
+                    orderBy: { position: 'asc' },
+                },
+            },
+            orderBy: [
+                { level: 'asc' },
+                { position: 'asc' },
+            ],
+        });
+    }
+    async getProductCategoryById(id) {
+        const category = await this.prisma.productCategory.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                slug: true,
+                imageUrl: true,
+                level: true,
+                parentId: true,
+                position: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                parent: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                children: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                        level: true,
+                        position: true,
+                        imageUrl: true,
+                    },
+                    orderBy: { position: 'asc' },
+                },
+                products: {
+                    select: {
+                        id: true,
+                        name: true,
+                        price: true,
+                        imageUrl: true,
+                        isActive: true,
+                    },
+                    where: { isActive: true },
+                    take: 10,
+                },
+            },
+        });
+        if (!category) {
+            throw new common_1.NotFoundException('Product category not found');
+        }
+        return category;
     }
 };
 exports.ProductsService = ProductsService;

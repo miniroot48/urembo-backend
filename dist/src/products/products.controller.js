@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
 const products_service_1 = require("./products.service");
+const create_product_dto_1 = require("./dto/create-product.dto");
+const update_product_dto_1 = require("./dto/update-product.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const update_stock_dto_1 = require("./dto/update-stock.dto");
 const update_qc_status_dto_1 = require("./dto/update-qc-status.dto");
@@ -22,9 +24,15 @@ let ProductsController = class ProductsController {
     constructor(productsService) {
         this.productsService = productsService;
     }
-    async getAllProducts(category, isActive) {
+    async getAllProducts(categoryId, isActive) {
         const isActiveBool = isActive !== 'false';
-        return this.productsService.getAllProducts(category, isActiveBool);
+        return this.productsService.getAllProducts(categoryId, isActiveBool);
+    }
+    async getProductCategories() {
+        return this.productsService.getProductCategories();
+    }
+    async getProductCategoryById(id) {
+        return this.productsService.getProductCategoryById(id);
     }
     async getProductById(id) {
         return this.productsService.getProductById(id);
@@ -41,8 +49,8 @@ let ProductsController = class ProductsController {
     async getUserProducts(req) {
         return this.productsService.getUserProducts(req.user.sub);
     }
-    async getProductsByCategory(category) {
-        return this.productsService.getProductsByCategory(category);
+    async getProductsByCategory(categoryId) {
+        return this.productsService.getProductsByCategory(categoryId);
     }
     async getProductsByManufacturer(manufacturerId) {
         return this.productsService.getProductsByManufacturer(manufacturerId);
@@ -64,12 +72,25 @@ let ProductsController = class ProductsController {
 exports.ProductsController = ProductsController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('category')),
+    __param(0, (0, common_1.Query)('categoryId')),
     __param(1, (0, common_1.Query)('isActive')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getAllProducts", null);
+__decorate([
+    (0, common_1.Get)('categories'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "getProductCategories", null);
+__decorate([
+    (0, common_1.Get)('categories/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "getProductCategoryById", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -83,7 +104,7 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, create_product_dto_1.CreateProductDto]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "createProduct", null);
 __decorate([
@@ -93,7 +114,7 @@ __decorate([
     __param(1, (0, common_1.Request)()),
     __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, Object, update_product_dto_1.UpdateProductDto]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "updateProduct", null);
 __decorate([
@@ -114,8 +135,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getUserProducts", null);
 __decorate([
-    (0, common_1.Get)('category/:category'),
-    __param(0, (0, common_1.Param)('category')),
+    (0, common_1.Get)('category/:categoryId'),
+    __param(0, (0, common_1.Param)('categoryId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

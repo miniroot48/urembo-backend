@@ -176,8 +176,8 @@ model Product {
   currency          String    @default("USD")
   stockQuantity     Int       @default(0) @map("stock_quantity")
   imageUrl          String?   @map("image_url")
-  category          String?
-  subcategory       String?
+  categoryId        String?   @map("category_id")
+  subcategoryId     String?   @map("subcategory_id")
   isActive          Boolean   @default(true) @map("is_active")
   retailerId        String    @map("retailer_id")
   manufacturerId    String?   @map("manufacturer_id")
@@ -190,6 +190,8 @@ model Product {
 
   // Relations
   retailer          Profile   @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  category          ProductCategory? @relation("ProductCategory", fields: [categoryId], references: [id])
+  subcategory       ProductCategory? @relation("ProductSubcategory", fields: [subcategoryId], references: [id])
   orderItems        OrderItem[]
 
   @@map("products")
@@ -717,8 +719,10 @@ model ProductCategory {
   // Relations
   parent            ProductCategory? @relation("ProductCategoryParent", fields: [parentId], references: [id])
   children          ProductCategory[] @relation("ProductCategoryParent")
+  products          Product[] @relation("ProductCategory")
+  subcategoryProducts Product[] @relation("ProductSubcategory")
 
-  @@map("product_categories_new")
+  @@map("product_categories")
 }
 
 model Staff {

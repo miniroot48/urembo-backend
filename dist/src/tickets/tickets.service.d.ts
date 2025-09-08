@@ -43,9 +43,9 @@ export declare class TicketsService {
         updatedAt: Date;
         description: string;
         status: string;
+        categoryId: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        categoryId: string | null;
         clientId: string | null;
         orderId: string | null;
         title: string;

@@ -1,37 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { user_role } from '@prisma/client';
-
-export interface CreateProductDto {
-  name: string;
-  description?: string;
-  price: number;
-  currency?: string;
-  stockQuantity?: number;
-  imageUrl?: string;
-  category?: string;
-  subcategory?: string;
-  sku?: string;
-  tags?: string[];
-  qcStatus?: string;
-  manufacturerId?: string;
-}
-
-export interface UpdateProductDto {
-  name?: string;
-  description?: string;
-  price?: number;
-  currency?: string;
-  stockQuantity?: number;
-  imageUrl?: string;
-  category?: string;
-  subcategory?: string;
-  sku?: string;
-  tags?: string[];
-  qcStatus?: string;
-  manufacturerId?: string;
-  isActive?: boolean;
-}
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -50,8 +21,8 @@ export class ProductsService {
       currency: createProductDto.currency || 'USD',
       stockQuantity: createProductDto.stockQuantity || 0,
       imageUrl: createProductDto.imageUrl,
-      category: createProductDto.category,
-      subcategory: createProductDto.subcategory,
+      categoryId: createProductDto.categoryId,
+      subcategoryId: createProductDto.subcategoryId,
       sku: createProductDto.sku,
       tags: createProductDto.tags || [],
       qcStatus: createProductDto.qcStatus,
@@ -77,14 +48,30 @@ export class ProductsService {
             businessName: true,
           },
         },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
       },
     });
   }
 
-  async getAllProducts(category?: string, isActive = true) {
+  async getAllProducts(categoryId?: string, isActive = true) {
     const where: any = { isActive };
-    if (category) {
-      where.category = category;
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
     
     const products = await this.prisma.product.findMany({
@@ -96,6 +83,22 @@ export class ProductsService {
             email: true,
             fullName: true,
             businessName: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
           },
         },
       },
@@ -115,6 +118,22 @@ export class ProductsService {
             email: true,
             fullName: true,
             businessName: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
           },
         },
       },
@@ -143,8 +162,8 @@ export class ProductsService {
     if (updateProductDto.currency !== undefined) updateData.currency = updateProductDto.currency;
     if (updateProductDto.stockQuantity !== undefined) updateData.stockQuantity = updateProductDto.stockQuantity;
     if (updateProductDto.imageUrl !== undefined) updateData.imageUrl = updateProductDto.imageUrl;
-    if (updateProductDto.category !== undefined) updateData.category = updateProductDto.category;
-    if (updateProductDto.subcategory !== undefined) updateData.subcategory = updateProductDto.subcategory;
+    if (updateProductDto.categoryId !== undefined) updateData.categoryId = updateProductDto.categoryId;
+    if (updateProductDto.subcategoryId !== undefined) updateData.subcategoryId = updateProductDto.subcategoryId;
     if (updateProductDto.sku !== undefined) updateData.sku = updateProductDto.sku;
     if (updateProductDto.tags !== undefined) updateData.tags = updateProductDto.tags;
     if (updateProductDto.qcStatus !== undefined) updateData.qcStatus = updateProductDto.qcStatus;
@@ -161,6 +180,22 @@ export class ProductsService {
             email: true,
             fullName: true,
             businessName: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
           },
         },
       },
@@ -189,10 +224,10 @@ export class ProductsService {
     return products;
   }
 
-  async getProductsByCategory(category: string) {
+  async getProductsByCategory(categoryId: string) {
     const products = await this.prisma.product.findMany({
       where: { 
-        category,
+        categoryId,
         isActive: true,
       },
       include: {
@@ -202,6 +237,22 @@ export class ProductsService {
             email: true,
             fullName: true,
             businessName: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
           },
         },
       },
@@ -226,6 +277,22 @@ export class ProductsService {
             businessName: true,
           },
         },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -242,8 +309,16 @@ export class ProductsService {
             OR: [
               { name: { contains: query, mode: 'insensitive' } },
               { description: { contains: query, mode: 'insensitive' } },
-              { category: { contains: query, mode: 'insensitive' } },
-              { subcategory: { contains: query, mode: 'insensitive' } },
+              { 
+                category: {
+                  name: { contains: query, mode: 'insensitive' }
+                }
+              },
+              { 
+                subcategory: {
+                  name: { contains: query, mode: 'insensitive' }
+                }
+              },
               { sku: { contains: query, mode: 'insensitive' } },
               { tags: { has: query } },
             ],
@@ -257,6 +332,22 @@ export class ProductsService {
             email: true,
             fullName: true,
             businessName: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
           },
         },
       },
@@ -309,10 +400,122 @@ export class ProductsService {
             businessName: true,
           },
         },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
       },
       orderBy: { stockQuantity: 'asc' },
     });
 
     return products;
+  }
+
+  async getProductCategories() {
+    return this.prisma.productCategory.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        slug: true,
+        imageUrl: true,
+        level: true,
+        parentId: true,
+        position: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        parent: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        children: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            level: true,
+            position: true,
+          },
+          orderBy: { position: 'asc' },
+        },
+      },
+      orderBy: [
+        { level: 'asc' },
+        { position: 'asc' },
+      ],
+    });
+  }
+
+  async getProductCategoryById(id: string) {
+    const category = await this.prisma.productCategory.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        slug: true,
+        imageUrl: true,
+        level: true,
+        parentId: true,
+        position: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        parent: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        children: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            level: true,
+            position: true,
+            imageUrl: true,
+          },
+          orderBy: { position: 'asc' },
+        },
+        products: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            imageUrl: true,
+            isActive: true,
+          },
+          where: { isActive: true },
+          take: 10, // Limit to first 10 products for preview
+        },
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException('Product category not found');
+    }
+
+    return category;
   }
 }

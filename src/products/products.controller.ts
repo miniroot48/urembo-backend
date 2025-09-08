@@ -11,7 +11,9 @@ import {
   UseGuards, 
   Request 
 } from '@nestjs/common';
-import { ProductsService, CreateProductDto, UpdateProductDto } from './products.service';
+import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { UpdateQcStatusDto } from './dto/update-qc-status.dto';
@@ -22,12 +24,22 @@ export class ProductsController {
 
   @Get()
   async getAllProducts(
-    @Query('category') category?: string,
+    @Query('categoryId') categoryId?: string,
     @Query('isActive') isActive?: string,
   ) {
     const isActiveBool = isActive !== 'false';
     
-    return this.productsService.getAllProducts(category, isActiveBool);
+    return this.productsService.getAllProducts(categoryId, isActiveBool);
+  }
+
+  @Get('categories')
+  async getProductCategories() {
+    return this.productsService.getProductCategories();
+  }
+
+  @Get('categories/:id')
+  async getProductCategoryById(@Param('id') id: string) {
+    return this.productsService.getProductCategoryById(id);
   }
 
   @Get(':id')
@@ -65,11 +77,11 @@ export class ProductsController {
     return this.productsService.getUserProducts(req.user.sub);
   }
 
-  @Get('category/:category')
+  @Get('category/:categoryId')
   async getProductsByCategory(
-    @Param('category') category: string,
+    @Param('categoryId') categoryId: string,
   ) {
-    return this.productsService.getProductsByCategory(category);
+    return this.productsService.getProductsByCategory(categoryId);
   }
 
   @Get('manufacturer/:manufacturerId')

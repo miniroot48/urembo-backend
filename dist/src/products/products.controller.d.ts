@@ -1,36 +1,110 @@
-import { ProductsService, CreateProductDto, UpdateProductDto } from './products.service';
+import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { UpdateQcStatusDto } from './dto/update-qc-status.dto';
 export declare class ProductsController {
     private productsService;
     constructor(productsService: ProductsService);
-    getAllProducts(category?: string, isActive?: string): Promise<({
+    getAllProducts(categoryId?: string, isActive?: string): Promise<({
         retailer: {
             id: string;
             email: string;
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
+    })[]>;
+    getProductCategories(): Promise<{
+        level: number;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
-    })[]>;
+        name: string;
+        description: string;
+        position: number;
+        isActive: boolean;
+        imageUrl: string;
+        slug: string;
+        parentId: string;
+        parent: {
+            id: string;
+            name: string;
+            slug: string;
+        };
+        children: {
+            level: number;
+            id: string;
+            name: string;
+            position: number;
+            slug: string;
+        }[];
+    }[]>;
+    getProductCategoryById(id: string): Promise<{
+        level: number;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        products: {
+            id: string;
+            name: string;
+            isActive: boolean;
+            price: import("@prisma/client/runtime/library").Decimal;
+            imageUrl: string;
+        }[];
+        name: string;
+        description: string;
+        position: number;
+        isActive: boolean;
+        imageUrl: string;
+        slug: string;
+        parentId: string;
+        parent: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        children: {
+            level: number;
+            id: string;
+            name: string;
+            description: string;
+            position: number;
+            imageUrl: string;
+            slug: string;
+        }[];
+    }>;
     getProductById(id: string): Promise<{
         retailer: {
             id: string;
@@ -38,25 +112,37 @@ export declare class ProductsController {
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     createProduct(req: any, createProductDto: CreateProductDto): Promise<{
         retailer: {
@@ -65,25 +151,37 @@ export declare class ProductsController {
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     updateProduct(id: string, req: any, updateProductDto: UpdateProductDto): Promise<{
         retailer: {
@@ -92,92 +190,116 @@ export declare class ProductsController {
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     deleteProduct(id: string, req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getUserProducts(req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
-    getProductsByCategory(category: string): Promise<({
+    getProductsByCategory(categoryId: string): Promise<({
         retailer: {
             id: string;
             email: string;
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getProductsByManufacturer(manufacturerId: string): Promise<({
         retailer: {
@@ -186,25 +308,37 @@ export declare class ProductsController {
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     searchProducts(query: string): Promise<({
         retailer: {
@@ -213,65 +347,77 @@ export declare class ProductsController {
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     updateStockQuantity(id: string, req: any, body: UpdateStockDto): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     updateQcStatus(id: string, req: any, body: UpdateQcStatusDto): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getLowStockProducts(threshold?: string): Promise<({
         retailer: {
@@ -280,24 +426,36 @@ export declare class ProductsController {
             fullName: string;
             businessName: string;
         };
+        category: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
+        subcategory: {
+            id: string;
+            name: string;
+            description: string;
+            slug: string;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         description: string | null;
+        isActive: boolean;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
         imageUrl: string | null;
-        category: string | null;
-        subcategory: string | null;
-        isActive: boolean;
-        retailerId: string;
-        manufacturerId: string | null;
+        categoryId: string | null;
+        subcategoryId: string | null;
         sku: string | null;
         tags: string[];
         qcStatus: string | null;
+        manufacturerId: string | null;
+        retailerId: string;
         createdByRole: import(".prisma/client").$Enums.user_role | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
 }
