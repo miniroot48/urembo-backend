@@ -1,0 +1,815 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum user_role {
+  client
+  vendor
+  retailer
+  admin
+  manufacturer
+}
+
+enum order_status {
+  pending
+  processing
+  shipped
+  delivered
+  cancelled
+  pending_confirmation
+  confirmed
+}
+
+enum order_status_enhanced {
+  pending
+  paid
+  processing
+  shipped
+  delivered
+  completed
+  cancelled
+  refunded
+  disputed
+}
+
+enum order_status_new {
+  pending
+  paid
+  processing
+  fulfilled
+  cancelled
+}
+
+enum payment_status {
+  pending
+  processing
+  completed
+  failed
+  refunded
+}
+
+enum payment_provider {
+  stripe
+  paystack
+  mpesa
+}
+
+enum booking_status {
+  pending
+  confirmed
+  completed
+  cancelled
+  rejected
+}
+
+enum appointment_status_enhanced {
+  pending
+  confirmed
+  in_progress
+  completed
+  client_confirmed
+  cancelled
+  no_show
+  disputed
+}
+
+enum shipment_status {
+  pending
+  dispatched
+  in_transit
+  out_for_delivery
+  delivered
+  failed_delivery
+  returned
+}
+
+enum commission_source {
+  product
+  service
+}
+
+enum onboarding_status {
+  pending
+  in_progress
+  submitted
+  approved
+  rejected
+  revision_requested
+}
+
+enum onboarding_field_type {
+  text
+  textarea
+  select
+  file
+  email
+  phone
+  url
+  rich_text
+}
+
+model Profile {
+  id                    String    @id @default(uuid())
+  email                 String    @unique
+  password              String   // Hashed password for JWT auth
+  fullName              String?   @map("full_name")
+  phone                 String?
+  avatarUrl             String?   @map("avatar_url")
+  role                  user_role @default(client)
+  businessName          String?   @map("business_name")
+  businessDescription   String?   @map("business_description")
+  businessAddress       String?   @map("business_address")
+  businessPhone         String?   @map("business_phone")
+  isVerified            Boolean   @default(false) @map("is_verified")
+  isSuspended           Boolean   @default(false) @map("is_suspended")
+  suspendedAt           DateTime? @map("suspended_at")
+  suspendedBy           String?   @map("suspended_by")
+  suspensionReason      String?   @map("suspension_reason")
+  onboardingStatus      onboarding_status? @map("onboarding_status")
+  paymentAccountDetails Json?     @map("payment_account_details")
+  paymentAccountType    String?   @map("payment_account_type")
+  paymentDetailsVerified Boolean? @default(false) @map("payment_details_verified")
+  createdAt             DateTime? @map("created_at")
+  updatedAt             DateTime? @map("updated_at")
+
+  // Relations
+  products              Product[]
+  services              Service[]
+  orders                Order[]
+  clientAppointments    Appointment[] @relation("AppointmentClient")
+  vendorAppointments    Appointment[] @relation("AppointmentVendor")
+  serviceAppointments   ServiceAppointment[]
+  commissionTransactions CommissionTransaction[]
+  paymentMethods        PaymentMethod[]
+  tickets               Ticket[]
+  ticketResponses       TicketResponse[]
+  staffAssignments      StaffAssignment[]
+  roleAuditLogs         RoleAuditLog[]
+  shipments             Shipment[]
+  ticketAuditLogs       TicketAuditLog[]
+  ticketConversations   TicketConversation[]
+  notifications         Notification[]
+  wishlist              Wishlist[]
+  staff                 Staff[]
+  serviceReviews        ServiceReview[] @relation("ServiceReviewClient")
+  vendorServiceReviews  ServiceReview[] @relation("ServiceReviewVendor")
+  onboardingSubmissions OnboardingSubmission[]
+  onboardingReviews     OnboardingReview[] @relation("OnboardingReviewUser")
+  adminOnboardingReviews OnboardingReview[] @relation("OnboardingReviewAdmin")
+
+  @@map("profiles")
+}
+
+model Product {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  price             Decimal   @db.Decimal(10, 2)
+  currency          String    @default("USD")
+  stockQuantity     Int       @default(0) @map("stock_quantity")
+  imageUrl          String?   @map("image_url")
+  category          String?
+  subcategory       String?
+  isActive          Boolean   @default(true) @map("is_active")
+  retailerId        String    @map("retailer_id")
+  manufacturerId    String?   @map("manufacturer_id")
+  sku               String?   @map("sku")
+  tags              String[]
+  qcStatus          String?   @map("qc_status")
+  createdByRole     user_role? @map("created_by_role")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  retailer          Profile   @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  orderItems        OrderItem[]
+
+  @@map("products")
+}
+
+model Service {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  price             Decimal   @db.Decimal(10, 2)
+  currency          String    @default("USD")
+  durationMinutes   Int       @map("duration_minutes")
+  imageUrl          String?   @map("image_url")
+  category          String?
+  categoryId        String?   @map("category_id")
+  subcategoryId     String?   @map("subcategory_id")
+  actualServiceId   String?   @map("actual_service_id")
+  deliveryMethod    String?   @map("delivery_method")
+  metadata          Json?
+  isActive          Boolean   @default(true) @map("is_active")
+  vendorId          String    @map("vendor_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  vendor            Profile   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  appointments      Appointment[]
+  serviceAppointments ServiceAppointment[]
+  serviceReviews    ServiceReview[]
+  serviceCategory   ServiceCategory? @relation("ServiceCategory", fields: [categoryId], references: [id])
+  serviceSubcategory ServiceCategory? @relation("ServiceSubcategory", fields: [subcategoryId], references: [id])
+  actualService     ServiceCategory? @relation("ServiceActual", fields: [actualServiceId], references: [id])
+
+  @@map("services")
+}
+
+model Order {
+  id                String      @id @default(uuid())
+  userId            String?     @map("user_id")
+  clientId          String?     @map("client_id")
+  vendorId          String?     @map("vendor_id")
+  retailerId        String?     @map("retailer_id")
+  manufacturerId    String?     @map("manufacturer_id")
+  serviceId         String?     @map("service_id")
+  serviceType       String?     @map("service_type")
+  totalAmount       Decimal     @db.Decimal(10, 2) @map("total_amount")
+  currency          String      @default("USD")
+  status            order_status @default(pending)
+  statusEnhanced    order_status_enhanced? @map("status_enhanced")
+  customerEmail     String      @map("customer_email")
+  customerPhone     String?     @map("customer_phone")
+  shippingAddress   Json?       @map("shipping_address")
+  notes             String?
+  escrowAmount      Decimal?    @db.Decimal(10, 2) @map("escrow_amount")
+  escrowStatus      String?     @map("escrow_status")
+  commissionAmount  Decimal?    @db.Decimal(10, 2) @map("commission_amount")
+  commissionRate    Decimal?    @db.Decimal(5, 2) @map("commission_rate")
+  confirmedAt       DateTime?   @map("confirmed_at")
+  completedAt       DateTime?   @map("completed_at")
+  completionConfirmedAt DateTime? @map("completion_confirmed_at")
+  disputedAt        DateTime?   @map("disputed_at")
+  autoReleaseAt     DateTime?   @map("auto_release_at")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user              Profile?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  orderItems        OrderItem[]
+  serviceAppointments ServiceAppointment[]
+  shipments         Shipment[]
+  tickets           Ticket[]
+  payments          Payment[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id                String    @id @default(uuid())
+  orderId           String    @map("order_id")
+  productId         String    @map("product_id")
+  quantity          Int       @default(1)
+  unitPrice         Decimal   @db.Decimal(10, 2) @map("unit_price")
+  totalPrice        Decimal   @db.Decimal(10, 2) @map("total_price")
+  currency          String?   @default("USD")
+  title             String?
+  type              String?
+  refId             String?   @map("ref_id")
+  subtotal          Decimal?  @db.Decimal(10, 2)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model Appointment {
+  id                String            @id @default(uuid())
+  serviceId         String            @map("service_id")
+  clientId          String            @map("client_id")
+  vendorId          String            @map("vendor_id")
+  staffId           String?           @map("staff_id")
+  appointmentDate   DateTime          @map("appointment_date")
+  startTime         DateTime?         @map("start_time")
+  endTime           DateTime?         @map("end_time")
+  durationMinutes   Int               @map("duration_minutes")
+  status            booking_status    @default(pending)
+  statusEnhanced    appointment_status_enhanced? @map("status_enhanced")
+  price             Decimal?          @db.Decimal(10, 2)
+  totalAmount       Decimal           @db.Decimal(10, 2) @map("total_amount")
+  currency          String            @default("USD")
+  escrowAmount      Decimal?          @db.Decimal(10, 2) @map("escrow_amount")
+  escrowStatus      String?           @map("escrow_status")
+  commissionAmount  Decimal?          @db.Decimal(10, 2) @map("commission_amount")
+  commissionRate    Decimal?          @db.Decimal(5, 2) @map("commission_rate")
+  completionConfirmedAt DateTime?     @map("completion_confirmed_at")
+  autoReleaseAt     DateTime?         @map("auto_release_at")
+  notes             String?
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  service           Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  client            Profile           @relation("AppointmentClient", fields: [clientId], references: [id], onDelete: Cascade)
+  vendor            Profile           @relation("AppointmentVendor", fields: [vendorId], references: [id], onDelete: Cascade)
+  tickets           Ticket[]
+  serviceReviews    ServiceReview[]
+
+  @@map("appointments")
+}
+
+model ServiceAppointment {
+  id                String            @id @default(uuid())
+  orderId           String            @map("order_id")
+  serviceId         String            @map("service_id")
+  vendorId          String            @map("vendor_id")
+  staffId           String?           @map("staff_id")
+  appointmentDate   DateTime          @map("appointment_date")
+  durationMinutes   Int               @map("duration_minutes")
+  servicePrice      Decimal           @db.Decimal(10, 2) @map("service_price")
+  currency          String            @default("USD")
+  status            String            @default("pending")
+  notes             String?
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  order             Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  service           Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  vendor            Profile           @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@map("service_appointments")
+}
+
+model CommissionSettings {
+  id                String    @id @default(uuid())
+  role              user_role @unique
+  commissionRate    Decimal   @db.Decimal(5, 2) @map("commission_rate")
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  updatedBy         String?   @map("updated_by")
+
+  @@map("commission_settings")
+}
+
+model CommissionTransaction {
+  id                    String        @id @default(uuid())
+  businessUserId        String        @map("business_user_id")
+  businessRole          user_role     @map("business_role")
+  transactionType       String        @map("transaction_type")
+  transactionId         String        @map("transaction_id")
+  transactionAmount     Decimal       @db.Decimal(10, 2) @map("transaction_amount")
+  commissionRate        Decimal       @db.Decimal(5, 2) @map("commission_rate")
+  commissionAmount      Decimal       @db.Decimal(10, 2) @map("commission_amount")
+  paymentStatus         String        @default("pending") @map("payment_status")
+  paymentMethodId       String?       @map("payment_method_id")
+  stripePaymentIntentId String?       @map("stripe_payment_intent_id")
+  processedAt           DateTime?     @map("processed_at")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  metadata              Json?
+
+  // Relations
+  businessUser          Profile       @relation(fields: [businessUserId], references: [id], onDelete: Cascade)
+
+  @@map("commission_transactions")
+}
+
+model PaymentMethod {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  stripePaymentMethodId String    @map("stripe_payment_method_id")
+  cardBrand             String    @map("card_brand")
+  cardLast4             String    @map("card_last4")
+  cardExpMonth          Int       @map("card_exp_month")
+  cardExpYear           Int       @map("card_exp_year")
+  isDefault             Boolean   @default(false) @map("is_default")
+  isActive              Boolean   @default(true) @map("is_active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user                  Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payment_methods")
+}
+
+model PaymentProviderSettings {
+  id                    String    @id @default(uuid())
+  provider              payment_provider @unique
+  isActive              Boolean   @default(false) @map("is_active")
+  supportedCurrencies   String[]  @map("supported_currencies")
+  configuration         Json?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@map("payment_provider_settings")
+}
+
+model VendorScheduleSlot {
+  id                String    @id @default(uuid())
+  vendorId          String    @map("vendor_id")
+  slotDate          DateTime  @map("slot_date") @db.Date
+  slotTime          DateTime  @map("slot_time") @db.Time
+  isBlocked         Boolean   @default(false) @map("is_blocked")
+  appointmentId     String?   @map("appointment_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@unique([vendorId, slotDate, slotTime])
+  @@map("vendor_schedule_slots")
+}
+
+model CmsSettings {
+  id                String    @id @default(uuid())
+  settingKey        String    @unique @map("setting_key")
+  settingValue      String    @map("setting_value")
+  settingType       String    @default("string") @map("setting_type")
+  description       String?
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_settings")
+}
+
+model AdminCurrencySettings {
+  id                String    @id @default(uuid())
+  currencyCode      String    @map("currency_code")
+  currencyName      String    @map("currency_name")
+  currencySymbol    String    @map("currency_symbol")
+  isDefault         Boolean   @default(false) @map("is_default")
+  isActive          Boolean   @default(true) @map("is_active")
+  exchangeRate      Decimal?  @db.Decimal(10, 4) @map("exchange_rate")
+  updatedBy         String?   @map("updated_by")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("admin_currency_settings")
+}
+
+model TicketCategory {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  color             String?
+  icon              String?
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  tickets           Ticket[]
+
+  @@map("ticket_categories")
+}
+
+model Ticket {
+  id                String          @id @default(uuid())
+  ticketNumber      String          @unique @map("ticket_number")
+  title             String
+  description       String
+  categoryId        String?         @map("category_id")
+  priority          String          @default("medium")
+  status            String          @default("open")
+  createdBy         String          @map("created_by")
+  assignedTo        String?         @map("assigned_to")
+  clientId          String?         @map("client_id")
+  orderId           String?         @map("order_id")
+  appointmentId     String?         @map("appointment_id")
+  tags              String[]
+  metadata          Json?
+  resolvedAt        DateTime?       @map("resolved_at")
+  closedAt          DateTime?       @map("closed_at")
+  lastActivityAt    DateTime?       @map("last_activity_at")
+  escalatedAt       DateTime?       @map("escalated_at")
+  dueDate           DateTime?       @map("due_date")
+  satisfactionRating Int?           @map("satisfaction_rating")
+  feedback          String?
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  category          TicketCategory? @relation(fields: [categoryId], references: [id])
+  createdByProfile  Profile         @relation(fields: [createdBy], references: [id])
+  order             Order?          @relation(fields: [orderId], references: [id])
+  appointment       Appointment?    @relation(fields: [appointmentId], references: [id])
+  responses         TicketResponse[]
+  auditLogs         TicketAuditLog[]
+  conversations     TicketConversation[]
+
+  @@map("tickets")
+}
+
+model TicketResponse {
+  id                String    @id @default(uuid())
+  ticketId          String    @map("ticket_id")
+  userId            String    @map("user_id")
+  message           String
+  isInternal        Boolean   @default(false) @map("is_internal")
+  attachments       Json?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  ticket            Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user              Profile   @relation(fields: [userId], references: [id])
+
+  @@map("ticket_responses")
+}
+
+model StaffAssignment {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  role              String
+  permissions       Json
+  assignedBy        String    @map("assigned_by")
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user              Profile   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, role])
+  @@map("staff_assignments")
+}
+
+model RoleAuditLog {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  action            String
+  oldData           Json?
+  newData           Json?
+  changedBy         String    @map("changed_by")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user              Profile   @relation(fields: [userId], references: [id])
+
+  @@map("role_audit_logs")
+}
+
+model Shipment {
+  id                    String          @id @default(uuid())
+  orderId               String          @map("order_id")
+  shipmentNumber        String          @unique @map("shipment_number")
+  deliveryPartner       String          @map("delivery_partner")
+  trackingNumber        String?         @map("tracking_number")
+  estimatedDeliveryDate DateTime?       @map("estimated_delivery_date")
+  actualDeliveryDate    DateTime?       @map("actual_delivery_date")
+  deliveryAddress       Json?           @map("delivery_address")
+  deliveryNotes         String?         @map("delivery_notes")
+  createdBy             String          @map("created_by")
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  order                 Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdByProfile      Profile         @relation(fields: [createdBy], references: [id])
+  statusUpdates         ShipmentStatusUpdate[]
+
+  @@map("shipments")
+}
+
+model ShipmentStatusUpdate {
+  id                String        @id @default(uuid())
+  shipmentId        String        @map("shipment_id")
+  status            shipment_status
+  previousStatus    shipment_status? @map("previous_status")
+  notes             String?
+  location          String?
+  updatedBy         String        @map("updated_by")
+  updatedAt         DateTime      @default(now()) @map("updated_at")
+  metadata          Json?
+
+  // Relations
+  shipment          Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@map("shipment_status_updates")
+}
+
+model TicketAuditLog {
+  id                String    @id @default(uuid())
+  ticketId          String    @map("ticket_id")
+  actionType        String    @map("action_type")
+  previousValue     String?   @map("previous_value")
+  newValue          String?   @map("new_value")
+  performedBy       String    @map("performed_by")
+  performedAt       DateTime  @default(now()) @map("performed_at")
+  metadata          Json?
+
+  // Relations
+  ticket            Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  performedByProfile Profile  @relation(fields: [performedBy], references: [id])
+
+  @@map("ticket_audit_logs")
+}
+
+model TicketConversation {
+  id                String    @id @default(uuid())
+  ticketId          String    @map("ticket_id")
+  message           String
+  attachments       Json?
+  isInternal        Boolean   @default(false) @map("is_internal")
+  createdBy         String    @map("created_by")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  ticket            Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  createdByProfile  Profile   @relation(fields: [createdBy], references: [id])
+
+  @@map("ticket_conversations")
+}
+
+// Additional tables from Supabase schema
+model Payment {
+  id                String    @id @default(uuid())
+  orderId           String    @map("order_id")
+  amount            Decimal   @db.Decimal(10, 2)
+  currency          String
+  provider          payment_provider
+  status            payment_status @default(pending)
+  providerTransactionId String? @map("provider_transaction_id")
+  providerResponse  Json?     @map("provider_response")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Notification {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  title             String
+  message           String
+  type              String    @default("info")
+  read              Boolean   @default(false)
+  actionUrl         String?   @map("action_url")
+  metadata          Json?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user              Profile   @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Wishlist {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  itemId            String    @map("item_id")
+  itemType          String    @map("item_type")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user              Profile   @relation(fields: [userId], references: [id])
+
+  @@map("wishlist")
+}
+
+model ServiceCategory {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  slug              String    @unique
+  imageUrl          String?   @map("image_url")
+  level             Int
+  parentId          String?   @map("parent_id")
+  position          Int
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  parent            ServiceCategory? @relation("ServiceCategoryParent", fields: [parentId], references: [id])
+  children          ServiceCategory[] @relation("ServiceCategoryParent")
+  services          Service[] @relation("ServiceCategory")
+  subcategoryServices Service[] @relation("ServiceSubcategory")
+  actualServices    Service[] @relation("ServiceActual")
+
+  @@map("service_categories")
+}
+
+model ProductCategory {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  slug              String    @unique
+  imageUrl          String?   @map("image_url")
+  level             Int
+  parentId          String?   @map("parent_id")
+  position          Int
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  parent            ProductCategory? @relation("ProductCategoryParent", fields: [parentId], references: [id])
+  children          ProductCategory[] @relation("ProductCategoryParent")
+
+  @@map("product_categories_new")
+}
+
+model Staff {
+  id                String    @id @default(uuid())
+  vendorId          String    @map("vendor_id")
+  name              String
+  bio               String?
+  imageUrl          String?   @map("image_url")
+  specialties       String[]
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  vendor            Profile   @relation(fields: [vendorId], references: [id])
+
+  @@map("staff")
+}
+
+model ServiceReview {
+  id                String    @id @default(uuid())
+  serviceId         String    @map("service_id")
+  appointmentId     String    @map("appointment_id")
+  clientId          String    @map("client_id")
+  vendorId          String    @map("vendor_id")
+  staffId           String?   @map("staff_id")
+  rating            Int
+  reviewText        String?   @map("review_text")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  service           Service   @relation(fields: [serviceId], references: [id])
+  appointment       Appointment @relation(fields: [appointmentId], references: [id])
+  client            Profile   @relation("ServiceReviewClient", fields: [clientId], references: [id])
+  vendor            Profile   @relation("ServiceReviewVendor", fields: [vendorId], references: [id])
+
+  @@map("service_reviews")
+}
+
+model OnboardingRequirement {
+  id                String                @id @default(uuid())
+  role              user_role
+  label             String
+  fieldType         onboarding_field_type @map("field_type")
+  isMandatory       Boolean               @default(true) @map("is_mandatory")
+  description       String?
+  placeholder       String?
+  selectOptions     Json?                 @map("select_options")
+  position          Int                   @default(0)
+  isActive          Boolean               @default(true) @map("is_active")
+  isPaymentRelated  Boolean?              @default(false) @map("is_payment_related")
+  validationRules   Json?                 @map("validation_rules")
+  createdAt         DateTime              @default(now()) @map("created_at")
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  submissions       OnboardingSubmission[]
+
+  @@map("onboarding_requirements")
+}
+
+model OnboardingSubmission {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  requirementId   String    @map("requirement_id")
+  value           String?
+  fileUrl         String?   @map("file_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requirement     OnboardingRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, requirementId])
+  @@map("onboarding_submissions")
+}
+
+model OnboardingReview {
+  id              String            @id @default(uuid())
+  userId          String            @map("user_id")
+  adminId         String            @map("admin_id")
+  status          onboarding_status
+  notes           String?
+  rejectionReason String?           @map("rejection_reason")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  user            Profile           @relation("OnboardingReviewUser", fields: [userId], references: [id], onDelete: Cascade)
+  admin           Profile           @relation("OnboardingReviewAdmin", fields: [adminId], references: [id])
+
+  @@map("onboarding_reviews")
+}
