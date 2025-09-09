@@ -14,6 +14,8 @@ import { PaymentsModule } from './payments/payments.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { CommissionModule } from './commission/commission.module';
 import { CmsModule } from './cms/cms.module';
+import { ProductCategoriesModule } from './product-categories/product-categories.module';
+import { ServiceCategoriesModule } from './service-categories/service-categories.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { CmsModule } from './cms/cms.module';
     TicketsModule,
     CommissionModule,
     CmsModule,
+    ProductCategoriesModule,
+    ServiceCategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

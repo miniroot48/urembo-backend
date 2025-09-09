@@ -23,6 +23,8 @@ const payments_module_1 = require("./payments/payments.module");
 const tickets_module_1 = require("./tickets/tickets.module");
 const commission_module_1 = require("./commission/commission.module");
 const cms_module_1 = require("./cms/cms.module");
+const product_categories_module_1 = require("./product-categories/product-categories.module");
+const service_categories_module_1 = require("./service-categories/service-categories.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -44,6 +46,8 @@ exports.AppModule = AppModule = __decorate([
             tickets_module_1.TicketsModule,
             commission_module_1.CommissionModule,
             cms_module_1.CmsModule,
+            product_categories_module_1.ProductCategoriesModule,
+            service_categories_module_1.ServiceCategoriesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
