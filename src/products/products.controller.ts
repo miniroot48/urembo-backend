@@ -127,4 +127,22 @@ export class ProductsController {
     
     return this.productsService.getLowStockProducts(thresholdNum);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('bulk/individual-prices')
+  async bulkUpdateIndividualPrices(
+    @Request() req,
+    @Body() body: { updates: { productId: string; newPrice: number }[] }
+  ) {
+    return this.productsService.bulkUpdateIndividualPrices(req.user.sub, req.user.role, body.updates);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('bulk/individual-stock')
+  async bulkUpdateIndividualStock(
+    @Request() req,
+    @Body() body: { updates: { productId: string; newStock: number }[] }
+  ) {
+    return this.productsService.bulkUpdateIndividualStock(req.user.sub, req.user.role, body.updates);
+  }
 }

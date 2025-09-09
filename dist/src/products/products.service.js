@@ -220,6 +220,32 @@ let ProductsService = class ProductsService {
         const products = await this.prisma.product.findMany({
             where: { retailerId: userId },
             orderBy: { createdAt: 'desc' },
+            include: {
+                retailer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+                subcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                    },
+                },
+            },
         });
         return products;
     }
@@ -497,6 +523,124 @@ let ProductsService = class ProductsService {
             throw new common_1.NotFoundException('Product category not found');
         }
         return category;
+    }
+    async bulkUpdateIndividualPrices(userId, userRole, updates) {
+        try {
+            const results = [];
+            for (const update of updates) {
+                const product = await this.getProductById(update.productId);
+                if (product.retailerId !== userId && userRole !== client_1.user_role.admin) {
+                    throw new common_1.ForbiddenException(`You can only update your own products. Product ${update.productId} is not yours.`);
+                }
+                const updatedProduct = await this.prisma.product.update({
+                    where: { id: update.productId },
+                    data: { price: update.newPrice },
+                    include: {
+                        retailer: {
+                            select: {
+                                id: true,
+                                email: true,
+                                fullName: true,
+                                businessName: true,
+                            },
+                        },
+                        category: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                description: true,
+                            },
+                        },
+                        subcategory: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                description: true,
+                            },
+                        },
+                    },
+                });
+                results.push({
+                    productId: update.productId,
+                    success: true,
+                    newPrice: update.newPrice,
+                    product: updatedProduct,
+                });
+            }
+            return {
+                success: true,
+                message: `Successfully updated prices for ${results.length} products`,
+                results,
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                error: error.message || 'Failed to bulk update individual prices',
+                results: [],
+            };
+        }
+    }
+    async bulkUpdateIndividualStock(userId, userRole, updates) {
+        try {
+            const results = [];
+            for (const update of updates) {
+                const product = await this.getProductById(update.productId);
+                if (product.retailerId !== userId && userRole !== client_1.user_role.admin) {
+                    throw new common_1.ForbiddenException(`You can only update your own products. Product ${update.productId} is not yours.`);
+                }
+                const updatedProduct = await this.prisma.product.update({
+                    where: { id: update.productId },
+                    data: { stockQuantity: update.newStock },
+                    include: {
+                        retailer: {
+                            select: {
+                                id: true,
+                                email: true,
+                                fullName: true,
+                                businessName: true,
+                            },
+                        },
+                        category: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                description: true,
+                            },
+                        },
+                        subcategory: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                description: true,
+                            },
+                        },
+                    },
+                });
+                results.push({
+                    productId: update.productId,
+                    success: true,
+                    newStock: update.newStock,
+                    product: updatedProduct,
+                });
+            }
+            return {
+                success: true,
+                message: `Successfully updated stock for ${results.length} products`,
+                results,
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                error: error.message || 'Failed to bulk update individual stock',
+                results: [],
+            };
+        }
     }
 };
 exports.ProductsService = ProductsService;

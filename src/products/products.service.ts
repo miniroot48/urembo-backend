@@ -219,6 +219,32 @@ export class ProductsService {
     const products = await this.prisma.product.findMany({
       where: { retailerId: userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        retailer: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+          },
+        },
+      },
     });
 
     return products;
@@ -517,5 +543,147 @@ export class ProductsService {
     }
 
     return category;
+  }
+
+  async bulkUpdateIndividualPrices(
+    userId: string, 
+    userRole: user_role, 
+    updates: { productId: string; newPrice: number }[]
+  ) {
+    try {
+      const results = [];
+      
+      for (const update of updates) {
+        // Get the product to verify ownership
+        const product = await this.getProductById(update.productId);
+        
+        // Only the product owner or admin can update
+        if (product.retailerId !== userId && userRole !== user_role.admin) {
+          throw new ForbiddenException(`You can only update your own products. Product ${update.productId} is not yours.`);
+        }
+
+        // Update the product price
+        const updatedProduct = await this.prisma.product.update({
+          where: { id: update.productId },
+          data: { price: update.newPrice },
+          include: {
+            retailer: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true,
+                businessName: true,
+              },
+            },
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+              },
+            },
+            subcategory: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+              },
+            },
+          },
+        });
+
+        results.push({
+          productId: update.productId,
+          success: true,
+          newPrice: update.newPrice,
+          product: updatedProduct,
+        });
+      }
+
+      return {
+        success: true,
+        message: `Successfully updated prices for ${results.length} products`,
+        results,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to bulk update individual prices',
+        results: [],
+      };
+    }
+  }
+
+  async bulkUpdateIndividualStock(
+    userId: string, 
+    userRole: user_role, 
+    updates: { productId: string; newStock: number }[]
+  ) {
+    try {
+      const results = [];
+      
+      for (const update of updates) {
+        // Get the product to verify ownership
+        const product = await this.getProductById(update.productId);
+        
+        // Only the product owner or admin can update
+        if (product.retailerId !== userId && userRole !== user_role.admin) {
+          throw new ForbiddenException(`You can only update your own products. Product ${update.productId} is not yours.`);
+        }
+
+        // Update the product stock
+        const updatedProduct = await this.prisma.product.update({
+          where: { id: update.productId },
+          data: { stockQuantity: update.newStock },
+          include: {
+            retailer: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true,
+                businessName: true,
+              },
+            },
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+              },
+            },
+            subcategory: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+              },
+            },
+          },
+        });
+
+        results.push({
+          productId: update.productId,
+          success: true,
+          newStock: update.newStock,
+          product: updatedProduct,
+        });
+      }
+
+      return {
+        success: true,
+        message: `Successfully updated stock for ${results.length} products`,
+        results,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || 'Failed to bulk update individual stock',
+        results: [],
+      };
+    }
   }
 }

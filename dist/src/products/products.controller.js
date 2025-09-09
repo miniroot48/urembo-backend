@@ -68,6 +68,12 @@ let ProductsController = class ProductsController {
         const thresholdNum = threshold ? parseInt(threshold, 10) : 10;
         return this.productsService.getLowStockProducts(thresholdNum);
     }
+    async bulkUpdateIndividualPrices(req, body) {
+        return this.productsService.bulkUpdateIndividualPrices(req.user.sub, req.user.role, body.updates);
+    }
+    async bulkUpdateIndividualStock(req, body) {
+        return this.productsService.bulkUpdateIndividualStock(req.user.sub, req.user.role, body.updates);
+    }
 };
 exports.ProductsController = ProductsController;
 __decorate([
@@ -183,6 +189,24 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getLowStockProducts", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('bulk/individual-prices'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "bulkUpdateIndividualPrices", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('bulk/individual-stock'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "bulkUpdateIndividualStock", null);
 exports.ProductsController = ProductsController = __decorate([
     (0, common_1.Controller)('products'),
     __metadata("design:paramtypes", [products_service_1.ProductsService])
