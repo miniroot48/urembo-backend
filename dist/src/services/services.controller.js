@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServicesController = void 0;
 const common_1 = require("@nestjs/common");
 const services_service_1 = require("./services.service");
+const dto_1 = require("./dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let ServicesController = class ServicesController {
     constructor(servicesService) {
@@ -60,6 +61,37 @@ let ServicesController = class ServicesController {
         const maxDurationNum = parseInt(maxDuration, 10);
         return this.servicesService.getServicesByDuration(maxDurationNum);
     }
+    async getServicesByTags(tags) {
+        const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
+        return this.servicesService.getServicesByTags(tagsArray);
+    }
+    async createStaff(createStaffDto, req) {
+        return this.servicesService.createStaff(req.user.sub, req.user.role, createStaffDto);
+    }
+    async getAllStaff(vendorId, isActive) {
+        const isActiveBool = isActive === undefined ? true : isActive === 'true';
+        return this.servicesService.getAllStaff(vendorId, isActiveBool);
+    }
+    async getStaffById(id) {
+        return this.servicesService.getStaffById(id);
+    }
+    async updateStaff(id, updateStaffDto, req) {
+        return this.servicesService.updateStaff(id, req.user.id, req.user.role, updateStaffDto);
+    }
+    async deleteStaff(id, req) {
+        return this.servicesService.deleteStaff(id, req.user.id, req.user.role);
+    }
+    async getStaffByVendorId(vendorId, isActive) {
+        const isActiveBool = isActive === undefined ? true : isActive === 'true';
+        return this.servicesService.getStaffByVendorId(vendorId, isActiveBool);
+    }
+    async searchStaff(query, vendorId) {
+        return this.servicesService.searchStaff(query, vendorId);
+    }
+    async getStaffBySpecialties(specialties, vendorId) {
+        const specialtiesArray = specialties ? specialties.split(',').map(s => s.trim()) : [];
+        return this.servicesService.getStaffBySpecialties(specialtiesArray, vendorId);
+    }
 };
 exports.ServicesController = ServicesController;
 __decorate([
@@ -83,7 +115,7 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, dto_1.CreateServiceDto]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "createService", null);
 __decorate([
@@ -93,7 +125,7 @@ __decorate([
     __param(1, (0, common_1.Request)()),
     __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, Object, dto_1.UpdateServiceDto]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "updateService", null);
 __decorate([
@@ -156,6 +188,80 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ServicesController.prototype, "getServicesByDuration", null);
+__decorate([
+    (0, common_1.Get)('tags'),
+    __param(0, (0, common_1.Query)('tags')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "getServicesByTags", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('staff'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.CreateStaffDto, Object]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "createStaff", null);
+__decorate([
+    (0, common_1.Get)('staff'),
+    __param(0, (0, common_1.Query)('vendorId')),
+    __param(1, (0, common_1.Query)('isActive')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "getAllStaff", null);
+__decorate([
+    (0, common_1.Get)('staff/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "getStaffById", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Put)('staff/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, dto_1.UpdateStaffDto, Object]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "updateStaff", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)('staff/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "deleteStaff", null);
+__decorate([
+    (0, common_1.Get)('staff/vendor/:vendorId'),
+    __param(0, (0, common_1.Param)('vendorId')),
+    __param(1, (0, common_1.Query)('isActive')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "getStaffByVendorId", null);
+__decorate([
+    (0, common_1.Get)('staff/search'),
+    __param(0, (0, common_1.Query)('query')),
+    __param(1, (0, common_1.Query)('vendorId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "searchStaff", null);
+__decorate([
+    (0, common_1.Get)('staff/specialties'),
+    __param(0, (0, common_1.Query)('specialties')),
+    __param(1, (0, common_1.Query)('vendorId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ServicesController.prototype, "getStaffBySpecialties", null);
 exports.ServicesController = ServicesController = __decorate([
     (0, common_1.Controller)('services'),
     __metadata("design:paramtypes", [services_service_1.ServicesService])

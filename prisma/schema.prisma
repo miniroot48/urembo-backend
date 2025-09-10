@@ -210,6 +210,7 @@ model Service {
   subcategoryId     String?   @map("subcategory_id")
   actualServiceId   String?   @map("actual_service_id")
   deliveryMethod    String?   @map("delivery_method")
+  tags              String[]
   metadata          Json?
   isActive          Boolean   @default(true) @map("is_active")
   vendorId          String    @map("vendor_id")

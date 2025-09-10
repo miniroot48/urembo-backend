@@ -10,7 +10,8 @@ import {
   UseGuards, 
   Request 
 } from '@nestjs/common';
-import { ServicesService, CreateServiceDto, UpdateServiceDto } from './services.service';
+import { ServicesService } from './services.service';
+import { CreateServiceDto, UpdateServiceDto, CreateStaffDto, UpdateStaffDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('services')
@@ -108,5 +109,83 @@ export class ServicesController {
     const maxDurationNum = parseInt(maxDuration, 10);
     
     return this.servicesService.getServicesByDuration(maxDurationNum);
+  }
+
+  @Get('tags')
+  async getServicesByTags(
+    @Query('tags') tags: string,
+  ) {
+    const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
+    
+    return this.servicesService.getServicesByTags(tagsArray);
+  }
+
+  // Staff Management Endpoints
+  @UseGuards(JwtAuthGuard)
+  @Post('staff')
+  async createStaff(
+    @Body() createStaffDto: CreateStaffDto,
+    @Request() req: any,
+  ) {
+    return this.servicesService.createStaff(req.user.sub, req.user.role, createStaffDto);
+  }
+
+  @Get('staff')
+  async getAllStaff(
+    @Query('vendorId') vendorId?: string,
+    @Query('isActive') isActive?: string,
+  ) {
+    const isActiveBool = isActive === undefined ? true : isActive === 'true';
+    return this.servicesService.getAllStaff(vendorId, isActiveBool);
+  }
+
+  @Get('staff/:id')
+  async getStaffById(@Param('id') id: string) {
+    return this.servicesService.getStaffById(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('staff/:id')
+  async updateStaff(
+    @Param('id') id: string,
+    @Body() updateStaffDto: UpdateStaffDto,
+    @Request() req: any,
+  ) {
+    return this.servicesService.updateStaff(id, req.user.id, req.user.role, updateStaffDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('staff/:id')
+  async deleteStaff(
+    @Param('id') id: string,
+    @Request() req: any,
+  ) {
+    return this.servicesService.deleteStaff(id, req.user.id, req.user.role);
+  }
+
+  @Get('staff/vendor/:vendorId')
+  async getStaffByVendorId(
+    @Param('vendorId') vendorId: string,
+    @Query('isActive') isActive?: string,
+  ) {
+    const isActiveBool = isActive === undefined ? true : isActive === 'true';
+    return this.servicesService.getStaffByVendorId(vendorId, isActiveBool);
+  }
+
+  @Get('staff/search')
+  async searchStaff(
+    @Query('query') query: string,
+    @Query('vendorId') vendorId?: string,
+  ) {
+    return this.servicesService.searchStaff(query, vendorId);
+  }
+
+  @Get('staff/specialties')
+  async getStaffBySpecialties(
+    @Query('specialties') specialties: string,
+    @Query('vendorId') vendorId?: string,
+  ) {
+    const specialtiesArray = specialties ? specialties.split(',').map(s => s.trim()) : [];
+    return this.servicesService.getStaffBySpecialties(specialtiesArray, vendorId);
   }
 }

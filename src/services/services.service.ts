@@ -1,37 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { user_role } from '@prisma/client';
-
-export interface CreateServiceDto {
-  name: string;
-  description?: string;
-  price: number;
-  currency?: string;
-  durationMinutes: number;
-  imageUrl?: string;
-  category?: string;
-  categoryId?: string;
-  subcategoryId?: string;
-  actualServiceId?: string;
-  deliveryMethod?: string;
-  metadata?: any;
-}
-
-export interface UpdateServiceDto {
-  name?: string;
-  description?: string;
-  price?: number;
-  currency?: string;
-  durationMinutes?: number;
-  imageUrl?: string;
-  category?: string;
-  categoryId?: string;
-  subcategoryId?: string;
-  actualServiceId?: string;
-  deliveryMethod?: string;
-  metadata?: any;
-  isActive?: boolean;
-}
+import { CreateServiceDto, UpdateServiceDto, CreateStaffDto, UpdateStaffDto } from './dto';
 
 @Injectable()
 export class ServicesService {
@@ -55,6 +25,7 @@ export class ServicesService {
       subcategoryId: createServiceDto.subcategoryId,
       actualServiceId: createServiceDto.actualServiceId,
       deliveryMethod: createServiceDto.deliveryMethod,
+      tags: createServiceDto.tags || [],
       metadata: createServiceDto.metadata,
       vendorId: userId,
     };
@@ -141,6 +112,7 @@ export class ServicesService {
     if (updateServiceDto.subcategoryId !== undefined) updateData.subcategoryId = updateServiceDto.subcategoryId;
     if (updateServiceDto.actualServiceId !== undefined) updateData.actualServiceId = updateServiceDto.actualServiceId;
     if (updateServiceDto.deliveryMethod !== undefined) updateData.deliveryMethod = updateServiceDto.deliveryMethod;
+    if (updateServiceDto.tags !== undefined) updateData.tags = updateServiceDto.tags;
     if (updateServiceDto.metadata !== undefined) updateData.metadata = updateServiceDto.metadata;
     if (updateServiceDto.isActive !== undefined) updateData.isActive = updateServiceDto.isActive;
 
@@ -244,6 +216,7 @@ export class ServicesService {
               { description: { contains: query, mode: 'insensitive' } },
               { category: { contains: query, mode: 'insensitive' } },
               { deliveryMethod: { contains: query, mode: 'insensitive' } },
+              { tags: { has: query } },
             ],
           },
         ],
@@ -333,5 +306,252 @@ export class ServicesService {
     });
 
     return services;
+  }
+
+  async getServicesByTags(tags: string[]) {
+    const services = await this.prisma.service.findMany({
+      where: {
+        AND: [
+          { isActive: true },
+          {
+            tags: {
+              hasSome: tags,
+            },
+          },
+        ],
+      },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return services;
+  }
+
+  // Staff Management Methods
+  async createStaff(userId: string, userRole: user_role, createStaffDto: CreateStaffDto) {
+    // Only vendors can create staff
+    if (userRole !== user_role.vendor) {
+      throw new ForbiddenException('Only vendors can create staff');
+    }
+
+    const staffData = {
+      name: createStaffDto.name,
+      bio: createStaffDto.bio,
+      imageUrl: createStaffDto.imageUrl,
+      specialties: createStaffDto.specialties || [],
+      isActive: createStaffDto.isActive !== undefined ? createStaffDto.isActive : true,
+      vendorId: userId,
+    };
+
+    return this.prisma.staff.create({
+      data: staffData,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getAllStaff(vendorId?: string, isActive = true) {
+    const where: any = { isActive };
+    if (vendorId) {
+      where.vendorId = vendorId;
+    }
+
+    return this.prisma.staff.findMany({
+      where,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getStaffById(id: string) {
+    const staff = await this.prisma.staff.findUnique({
+      where: { id },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+    });
+
+    if (!staff) {
+      throw new NotFoundException('Staff member not found');
+    }
+
+    return staff;
+  }
+
+  async updateStaff(id: string, userId: string, userRole: user_role, updateStaffDto: UpdateStaffDto) {
+    // Only vendors can update staff
+    if (userRole !== user_role.vendor) {
+      throw new ForbiddenException('Only vendors can update staff');
+    }
+
+    // Check if staff exists and belongs to the vendor
+    const existingStaff = await this.prisma.staff.findUnique({
+      where: { id },
+    });
+
+    if (!existingStaff) {
+      throw new NotFoundException('Staff member not found');
+    }
+
+    if (existingStaff.vendorId !== userId) {
+      throw new ForbiddenException('You can only update your own staff members');
+    }
+
+    const updateData: any = {};
+    if (updateStaffDto.name !== undefined) updateData.name = updateStaffDto.name;
+    if (updateStaffDto.bio !== undefined) updateData.bio = updateStaffDto.bio;
+    if (updateStaffDto.imageUrl !== undefined) updateData.imageUrl = updateStaffDto.imageUrl;
+    if (updateStaffDto.specialties !== undefined) updateData.specialties = updateStaffDto.specialties;
+    if (updateStaffDto.isActive !== undefined) updateData.isActive = updateStaffDto.isActive;
+
+    return this.prisma.staff.update({
+      where: { id },
+      data: updateData,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+    });
+  }
+
+  async deleteStaff(id: string, userId: string, userRole: user_role) {
+    // Only vendors can delete staff
+    if (userRole !== user_role.vendor) {
+      throw new ForbiddenException('Only vendors can delete staff');
+    }
+
+    // Check if staff exists and belongs to the vendor
+    const existingStaff = await this.prisma.staff.findUnique({
+      where: { id },
+    });
+
+    if (!existingStaff) {
+      throw new NotFoundException('Staff member not found');
+    }
+
+    if (existingStaff.vendorId !== userId) {
+      throw new ForbiddenException('You can only delete your own staff members');
+    }
+
+    return this.prisma.staff.delete({
+      where: { id },
+    });
+  }
+
+  async getStaffByVendorId(vendorId: string, isActive = true) {
+    return this.prisma.staff.findMany({
+      where: {
+        vendorId,
+        isActive,
+      },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async searchStaff(query: string, vendorId?: string) {
+    const where: any = {
+      isActive: true,
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { bio: { contains: query, mode: 'insensitive' } },
+        { specialties: { has: query } },
+      ],
+    };
+
+    if (vendorId) {
+      where.vendorId = vendorId;
+    }
+
+    return this.prisma.staff.findMany({
+      where,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getStaffBySpecialties(specialties: string[], vendorId?: string) {
+    const where: any = {
+      isActive: true,
+      specialties: {
+        hasSome: specialties,
+      },
+    };
+
+    if (vendorId) {
+      where.vendorId = vendorId;
+    }
+
+    return this.prisma.staff.findMany({
+      where,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            businessName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }

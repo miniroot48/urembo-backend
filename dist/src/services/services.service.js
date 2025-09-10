@@ -33,6 +33,7 @@ let ServicesService = class ServicesService {
             subcategoryId: createServiceDto.subcategoryId,
             actualServiceId: createServiceDto.actualServiceId,
             deliveryMethod: createServiceDto.deliveryMethod,
+            tags: createServiceDto.tags || [],
             metadata: createServiceDto.metadata,
             vendorId: userId,
         };
@@ -118,6 +119,8 @@ let ServicesService = class ServicesService {
             updateData.actualServiceId = updateServiceDto.actualServiceId;
         if (updateServiceDto.deliveryMethod !== undefined)
             updateData.deliveryMethod = updateServiceDto.deliveryMethod;
+        if (updateServiceDto.tags !== undefined)
+            updateData.tags = updateServiceDto.tags;
         if (updateServiceDto.metadata !== undefined)
             updateData.metadata = updateServiceDto.metadata;
         if (updateServiceDto.isActive !== undefined)
@@ -211,6 +214,7 @@ let ServicesService = class ServicesService {
                             { description: { contains: query, mode: 'insensitive' } },
                             { category: { contains: query, mode: 'insensitive' } },
                             { deliveryMethod: { contains: query, mode: 'insensitive' } },
+                            { tags: { has: query } },
                         ],
                     },
                 ],
@@ -293,6 +297,224 @@ let ServicesService = class ServicesService {
             orderBy: { durationMinutes: 'asc' },
         });
         return services;
+    }
+    async getServicesByTags(tags) {
+        const services = await this.prisma.service.findMany({
+            where: {
+                AND: [
+                    { isActive: true },
+                    {
+                        tags: {
+                            hasSome: tags,
+                        },
+                    },
+                ],
+            },
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        return services;
+    }
+    async createStaff(userId, userRole, createStaffDto) {
+        if (userRole !== client_1.user_role.vendor) {
+            throw new common_1.ForbiddenException('Only vendors can create staff');
+        }
+        const staffData = {
+            name: createStaffDto.name,
+            bio: createStaffDto.bio,
+            imageUrl: createStaffDto.imageUrl,
+            specialties: createStaffDto.specialties || [],
+            isActive: createStaffDto.isActive !== undefined ? createStaffDto.isActive : true,
+            vendorId: userId,
+        };
+        return this.prisma.staff.create({
+            data: staffData,
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+        });
+    }
+    async getAllStaff(vendorId, isActive = true) {
+        const where = { isActive };
+        if (vendorId) {
+            where.vendorId = vendorId;
+        }
+        return this.prisma.staff.findMany({
+            where,
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async getStaffById(id) {
+        const staff = await this.prisma.staff.findUnique({
+            where: { id },
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+        });
+        if (!staff) {
+            throw new common_1.NotFoundException('Staff member not found');
+        }
+        return staff;
+    }
+    async updateStaff(id, userId, userRole, updateStaffDto) {
+        if (userRole !== client_1.user_role.vendor) {
+            throw new common_1.ForbiddenException('Only vendors can update staff');
+        }
+        const existingStaff = await this.prisma.staff.findUnique({
+            where: { id },
+        });
+        if (!existingStaff) {
+            throw new common_1.NotFoundException('Staff member not found');
+        }
+        if (existingStaff.vendorId !== userId) {
+            throw new common_1.ForbiddenException('You can only update your own staff members');
+        }
+        const updateData = {};
+        if (updateStaffDto.name !== undefined)
+            updateData.name = updateStaffDto.name;
+        if (updateStaffDto.bio !== undefined)
+            updateData.bio = updateStaffDto.bio;
+        if (updateStaffDto.imageUrl !== undefined)
+            updateData.imageUrl = updateStaffDto.imageUrl;
+        if (updateStaffDto.specialties !== undefined)
+            updateData.specialties = updateStaffDto.specialties;
+        if (updateStaffDto.isActive !== undefined)
+            updateData.isActive = updateStaffDto.isActive;
+        return this.prisma.staff.update({
+            where: { id },
+            data: updateData,
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+        });
+    }
+    async deleteStaff(id, userId, userRole) {
+        if (userRole !== client_1.user_role.vendor) {
+            throw new common_1.ForbiddenException('Only vendors can delete staff');
+        }
+        const existingStaff = await this.prisma.staff.findUnique({
+            where: { id },
+        });
+        if (!existingStaff) {
+            throw new common_1.NotFoundException('Staff member not found');
+        }
+        if (existingStaff.vendorId !== userId) {
+            throw new common_1.ForbiddenException('You can only delete your own staff members');
+        }
+        return this.prisma.staff.delete({
+            where: { id },
+        });
+    }
+    async getStaffByVendorId(vendorId, isActive = true) {
+        return this.prisma.staff.findMany({
+            where: {
+                vendorId,
+                isActive,
+            },
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async searchStaff(query, vendorId) {
+        const where = {
+            isActive: true,
+            OR: [
+                { name: { contains: query, mode: 'insensitive' } },
+                { bio: { contains: query, mode: 'insensitive' } },
+                { specialties: { has: query } },
+            ],
+        };
+        if (vendorId) {
+            where.vendorId = vendorId;
+        }
+        return this.prisma.staff.findMany({
+            where,
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async getStaffBySpecialties(specialties, vendorId) {
+        const where = {
+            isActive: true,
+            specialties: {
+                hasSome: specialties,
+            },
+        };
+        if (vendorId) {
+            where.vendorId = vendorId;
+        }
+        return this.prisma.staff.findMany({
+            where,
+            include: {
+                vendor: {
+                    select: {
+                        id: true,
+                        email: true,
+                        fullName: true,
+                        businessName: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
     }
 };
 exports.ServicesService = ServicesService;
