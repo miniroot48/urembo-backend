@@ -121,6 +121,7 @@ export class OrdersService {
                 id: true,
                 name: true,
                 price: true,
+                retailerId: true,
               },
             },
           },
@@ -503,5 +504,62 @@ export class OrdersService {
     });
 
     return orders;
+  }
+
+  async getOrderItemsByRetailerId(retailerId: string) {
+    return this.prisma.orderItem.findMany({
+      where: {
+        product: {
+          retailerId: retailerId,
+        },
+        order: {
+          statusEnhanced: 'completed',
+        },
+      },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+          },
+        },
+        order: {
+          select: {
+            createdAt: true,
+            clientId: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async getServiceAppointmentsByVendorId(vendorId: string) {
+    return this.prisma.serviceAppointment.findMany({
+      where: {
+        vendorId: vendorId,
+      },
+      include: {
+        order: {
+          select: {
+            createdAt: true,
+            clientId: true,
+          },
+        },
+        service: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 }

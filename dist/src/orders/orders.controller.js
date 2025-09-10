@@ -59,6 +59,12 @@ let OrdersController = class OrdersController {
     async getOrdersByUser(userId, req) {
         return this.ordersService.getOrdersByUser(userId, req.user.role);
     }
+    async getOrderItemsByRetailerId(retailerId) {
+        return this.ordersService.getOrderItemsByRetailerId(retailerId);
+    }
+    async getServiceAppointmentsByVendorId(vendorId) {
+        return this.ordersService.getServiceAppointmentsByVendorId(vendorId);
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -164,6 +170,22 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrdersByUser", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('retailer/:retailerId/order-items'),
+    __param(0, (0, common_1.Param)('retailerId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getOrderItemsByRetailerId", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('vendor/:vendorId/service-appointments'),
+    __param(0, (0, common_1.Param)('vendorId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getServiceAppointmentsByVendorId", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [orders_service_1.OrdersService])

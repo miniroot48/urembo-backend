@@ -110,4 +110,20 @@ export class OrdersController {
   ) {
     return this.ordersService.getOrdersByUser(userId, req.user.role);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('retailer/:retailerId/order-items')
+  async getOrderItemsByRetailerId(
+    @Param('retailerId') retailerId: string,
+  ) {
+    return this.ordersService.getOrderItemsByRetailerId(retailerId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('vendor/:vendorId/service-appointments')
+  async getServiceAppointmentsByVendorId(
+    @Param('vendorId') vendorId: string,
+  ) {
+    return this.ordersService.getServiceAppointmentsByVendorId(vendorId);
+  }
 }
