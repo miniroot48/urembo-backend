@@ -818,3 +818,156 @@ model OnboardingReview {
 
   @@map("onboarding_reviews")
 }
+
+// CMS Models
+model CmsBanner {
+  id                String    @id @default(uuid())
+  title             String
+  subtitle          String?
+  imageUrl          String    @map("image_url")
+  mobileImageUrl    String?   @map("mobile_image_url")
+  ctaText           String?   @map("cta_text")
+  ctaLink           String?   @map("cta_link")
+  position          Int       @default(0)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_banners")
+}
+
+model CmsFeaturedItem {
+  id                String    @id @default(uuid())
+  itemType          String    @map("item_type")
+  itemId            String    @map("item_id")
+  position          Int       @default(0)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@unique([itemType, itemId])
+  @@map("cms_featured_items")
+}
+
+model CmsFooterContent {
+  id                String    @id @default(uuid())
+  sectionKey        String    @unique @map("section_key")
+  title             String
+  content           Json      @default("{}")
+  position          Int       @default(0)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_footer_content")
+}
+
+model CmsPageBanner {
+  id                String    @id @default(uuid())
+  pageRoute         String    @unique @map("page_route")
+  title             String
+  subtitle          String?
+  imageUrl          String    @map("image_url")
+  mobileImageUrl    String?   @map("mobile_image_url")
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_page_banners")
+}
+
+model CmsPopup {
+  id                      String    @id @default(uuid())
+  title                   String
+  content                 String
+  popupType               String    @map("popup_type")
+  targetPages             String[]  @default([]) @map("target_pages")
+  startDate               DateTime? @map("start_date")
+  endDate                 DateTime? @map("end_date")
+  maxDisplaysPerSession   Int       @default(1) @map("max_displays_per_session")
+  isActive                Boolean   @default(true) @map("is_active")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_popups")
+}
+
+model CmsThemeSetting {
+  id                String    @id @default(uuid())
+  settingKey        String    @unique @map("setting_key")
+  settingValue      String    @map("setting_value")
+  settingType       String    @map("setting_type")
+  description       String?
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_theme_settings")
+}
+
+model CmsCategoryBanner {
+  id                String    @id @default(uuid())
+  categorySlug      String    @map("category_slug")
+  title             String
+  subtitle          String?
+  imageUrl          String    @map("image_url")
+  mobileImageUrl    String?   @map("mobile_image_url")
+  ctaText           String?   @map("cta_text")
+  ctaUrl            String?   @map("cta_url")
+  position          Int       @default(0)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_category_banners")
+}
+
+model CmsCategory {
+  id                      String    @id @default(uuid())
+  categoryType            String    @map("category_type")
+  imageUrl                String    @map("image_url")
+  providerCount           Int       @map("provider_count")
+  position                Int       @default(0)
+  isActive                Boolean   @default(true) @map("is_active")
+  categoryId              String?   @map("category_id")
+  subcategoryId           String?   @map("subcategory_id")
+  productCategoryId       String?   @map("product_category_id")
+  productSubcategoryId    String?   @map("product_subcategory_id")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_categories")
+}
+
+model CmsPromotionalCard {
+  id                String    @id @default(uuid())
+  title             String
+  subtitle          String?
+  description       String?
+  imageUrl          String    @map("image_url")
+  ctaText           String?   @map("cta_text")
+  ctaLink           String?   @map("cta_link")
+  backgroundColor   String    @default("#ffffff") @map("background_color")
+  textColor         String    @default("#000000") @map("text_color")
+  position          Int       @default(0)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_promotional_cards")
+}
+
+model CmsPages {
+  id                String    @id @default(uuid())
+  title             String
+  slug              String    @unique
+  description       String?
+  content           String?
+  contentType       String    @default("text") @map("content_type")
+  pdfUrl            String?   @map("pdf_url")
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_pages")
+}

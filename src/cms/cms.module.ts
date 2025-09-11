@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CmsService } from './cms.service';
 import { CmsController } from './cms.controller';
+import { CmsService } from './cms.service';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
+  imports: [PrismaModule],
   controllers: [CmsController],
   providers: [CmsService],
   exports: [CmsService],

@@ -13,22 +13,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     }>;
     getAllServices(category?: string, isActive?: boolean): Promise<({
@@ -40,22 +40,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServiceById(id: string): Promise<{
@@ -67,22 +67,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     }>;
     updateService(id: string, userId: string, userRole: user_role, updateServiceDto: UpdateServiceDto): Promise<{
@@ -94,42 +94,42 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     }>;
     deleteService(id: string, userId: string, userRole: user_role): Promise<{
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     }>;
     getUserServices(userId: string): Promise<({
@@ -145,22 +145,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServicesByCategory(category: string): Promise<({
@@ -172,22 +172,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServicesByCategoryId(categoryId: string): Promise<({
@@ -204,22 +204,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     searchServices(query: string): Promise<({
@@ -231,22 +231,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServicesByDeliveryMethod(deliveryMethod: string): Promise<({
@@ -258,22 +258,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServicesByPriceRange(minPrice: number, maxPrice: number): Promise<({
@@ -285,22 +285,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServicesByDuration(maxDurationMinutes: number): Promise<({
@@ -312,22 +312,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     getServicesByTags(tags: string[]): Promise<({
@@ -339,22 +339,22 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        description: string | null;
-        price: import("@prisma/client/runtime/library").Decimal;
-        currency: string;
-        durationMinutes: number;
-        imageUrl: string | null;
-        category: string | null;
-        deliveryMethod: string | null;
-        tags: string[];
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        price: import("@prisma/client/runtime/library").Decimal;
+        currency: string;
+        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
+        tags: string[];
+        category: string | null;
+        durationMinutes: number;
         actualServiceId: string | null;
+        deliveryMethod: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         vendorId: string;
     })[]>;
     createStaff(userId: string, userRole: user_role, createStaffDto: CreateStaffDto): Promise<{
@@ -366,14 +366,14 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     }>;
     getAllStaff(vendorId?: string, isActive?: boolean): Promise<({
         vendor: {
@@ -384,14 +384,14 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     })[]>;
     getStaffById(id: string): Promise<{
         vendor: {
@@ -402,14 +402,14 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     }>;
     updateStaff(id: string, userId: string, userRole: user_role, updateStaffDto: UpdateStaffDto): Promise<{
         vendor: {
@@ -420,25 +420,25 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     }>;
     deleteStaff(id: string, userId: string, userRole: user_role): Promise<{
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     }>;
     getStaffByVendorId(vendorId: string, isActive?: boolean): Promise<({
         vendor: {
@@ -449,14 +449,14 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     })[]>;
     searchStaff(query: string, vendorId?: string): Promise<({
         vendor: {
@@ -467,14 +467,14 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     })[]>;
     getStaffBySpecialties(specialties: string[], vendorId?: string): Promise<({
         vendor: {
@@ -485,13 +485,13 @@ export declare class ServicesService {
         };
     } & {
         id: string;
-        name: string;
-        imageUrl: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vendorId: string;
+        name: string;
+        isActive: boolean;
+        imageUrl: string | null;
         bio: string | null;
         specialties: string[];
+        vendorId: string;
     })[]>;
 }
