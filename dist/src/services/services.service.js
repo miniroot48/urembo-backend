@@ -152,6 +152,22 @@ let ServicesService = class ServicesService {
     async getUserServices(userId) {
         const services = await this.prisma.service.findMany({
             where: { vendorId: userId },
+            include: {
+                serviceCategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    },
+                },
+                serviceSubcategory: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    },
+                },
+            },
             orderBy: { createdAt: 'desc' },
         });
         return services;

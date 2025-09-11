@@ -19,16 +19,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     getServiceById(id: string): Promise<{
         vendor: {
@@ -46,16 +46,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     }>;
     createService(req: any, createServiceDto: CreateServiceDto): Promise<{
         vendor: {
@@ -73,16 +73,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     }>;
     updateService(id: string, req: any, updateServiceDto: UpdateServiceDto): Promise<{
         vendor: {
@@ -100,16 +100,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     }>;
     deleteService(id: string, req: any): Promise<{
         id: string;
@@ -120,18 +120,29 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     }>;
-    getUserServices(req: any): Promise<{
+    getUserServices(req: any): Promise<({
+        serviceCategory: {
+            id: string;
+            name: string;
+            description: string;
+        };
+        serviceSubcategory: {
+            id: string;
+            name: string;
+            description: string;
+        };
+    } & {
         id: string;
         name: string;
         description: string | null;
@@ -140,17 +151,17 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
-    }[]>;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
+    })[]>;
     getServicesByCategory(category: string): Promise<({
         vendor: {
             id: string;
@@ -167,16 +178,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     getServicesByCategoryId(categoryId: string): Promise<({
         vendor: {
@@ -199,16 +210,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     searchServices(query: string): Promise<({
         vendor: {
@@ -226,16 +237,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     getServicesByDeliveryMethod(deliveryMethod: string): Promise<({
         vendor: {
@@ -253,16 +264,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     getServicesByPriceRange(minPrice?: string, maxPrice?: string): Promise<({
         vendor: {
@@ -280,16 +291,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     getServicesByDuration(maxDuration: string): Promise<({
         vendor: {
@@ -307,16 +318,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     getServicesByTags(tags: string): Promise<({
         vendor: {
@@ -334,16 +345,16 @@ export declare class ServicesController {
         durationMinutes: number;
         imageUrl: string | null;
         category: string | null;
-        categoryId: string | null;
-        subcategoryId: string | null;
-        actualServiceId: string | null;
         deliveryMethod: string | null;
         tags: string[];
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        categoryId: string | null;
+        subcategoryId: string | null;
+        actualServiceId: string | null;
+        vendorId: string;
     })[]>;
     createStaff(createStaffDto: CreateStaffDto, req: any): Promise<{
         vendor: {
@@ -357,9 +368,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     }>;
@@ -375,9 +386,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     })[]>;
@@ -393,9 +404,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     }>;
@@ -411,9 +422,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     }>;
@@ -422,9 +433,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     }>;
@@ -440,9 +451,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     })[]>;
@@ -458,9 +469,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     })[]>;
@@ -476,9 +487,9 @@ export declare class ServicesController {
         name: string;
         imageUrl: string | null;
         isActive: boolean;
-        vendorId: string;
         createdAt: Date;
         updatedAt: Date;
+        vendorId: string;
         bio: string | null;
         specialties: string[];
     })[]>;
