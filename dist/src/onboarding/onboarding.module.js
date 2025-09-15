@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const onboarding_service_1 = require("./onboarding.service");
 const onboarding_controller_1 = require("./onboarding.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
+const email_module_1 = require("../email/email.module");
 let OnboardingModule = class OnboardingModule {
 };
 exports.OnboardingModule = OnboardingModule;
 exports.OnboardingModule = OnboardingModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, email_module_1.EmailModule],
         controllers: [onboarding_controller_1.OnboardingController],
         providers: [onboarding_service_1.OnboardingService],
         exports: [onboarding_service_1.OnboardingService],

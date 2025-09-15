@@ -1,11 +1,13 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { booking_status } from '@prisma/client';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { UpdateAppointmentStatusDto } from './dto/update-appointment-status.dto';
 export declare class AppointmentsService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private emailService;
+    constructor(prisma: PrismaService, emailService: EmailService);
     createAppointment(createAppointmentDto: CreateAppointmentDto): Promise<{
         client: {
             id: string;
@@ -81,8 +83,8 @@ export declare class AppointmentsService {
         tickets: {
             id: string;
             createdAt: Date;
-            status: string;
             title: string;
+            status: string;
             priority: string;
         }[];
         serviceReviews: {

@@ -35,8 +35,8 @@ export declare class AppointmentsController {
         tickets: {
             id: string;
             createdAt: Date;
-            status: string;
             title: string;
+            status: string;
             priority: string;
         }[];
         serviceReviews: {

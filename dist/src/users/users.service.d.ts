@@ -50,6 +50,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -120,6 +122,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -144,6 +148,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -185,6 +191,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -209,6 +217,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -233,6 +243,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -257,6 +269,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -281,6 +295,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -351,6 +367,8 @@ export declare class UsersService {
         paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
         paymentAccountType: string | null;
         paymentDetailsVerified: boolean | null;
+        paystackSubaccountId: string | null;
+        paystackSubaccountVerified: boolean | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }[]>;

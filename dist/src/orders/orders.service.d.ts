@@ -1,4 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { order_status, order_status_enhanced } from '@prisma/client';
 export interface CreateOrderDto {
     cartItems: Array<{
@@ -39,7 +40,8 @@ export interface UpdateOrderDto {
 }
 export declare class OrdersService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private emailService;
+    constructor(prisma: PrismaService, emailService: EmailService);
     createOrder(userId: string | null, createOrderDto: CreateOrderDto): Promise<{
         serviceAppointments: ({
             vendor: {
@@ -51,8 +53,8 @@ export declare class OrdersService {
             service: {
                 id: string;
                 name: string;
-                price: import("@prisma/client/runtime/library").Decimal;
                 imageUrl: string;
+                price: import("@prisma/client/runtime/library").Decimal;
             };
         } & {
             id: string;
@@ -87,11 +89,11 @@ export declare class OrdersService {
             updatedAt: Date;
             orderId: string;
             createdBy: string;
-            shipmentNumber: string;
-            deliveryPartner: string;
             trackingNumber: string | null;
             estimatedDeliveryDate: Date | null;
             actualDeliveryDate: Date | null;
+            shipmentNumber: string;
+            deliveryPartner: string;
             deliveryAddress: import("@prisma/client/runtime/library").JsonValue | null;
             deliveryNotes: string | null;
         })[];
@@ -104,21 +106,21 @@ export declare class OrdersService {
             product: {
                 id: string;
                 name: string;
-                price: import("@prisma/client/runtime/library").Decimal;
                 imageUrl: string;
+                price: import("@prisma/client/runtime/library").Decimal;
                 retailerId: string;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -146,6 +148,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -196,13 +199,13 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -230,6 +233,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -247,8 +251,8 @@ export declare class OrdersService {
             service: {
                 id: string;
                 name: string;
-                price: import("@prisma/client/runtime/library").Decimal;
                 imageUrl: string;
+                price: import("@prisma/client/runtime/library").Decimal;
             };
         } & {
             id: string;
@@ -283,11 +287,11 @@ export declare class OrdersService {
             updatedAt: Date;
             orderId: string;
             createdBy: string;
-            shipmentNumber: string;
-            deliveryPartner: string;
             trackingNumber: string | null;
             estimatedDeliveryDate: Date | null;
             actualDeliveryDate: Date | null;
+            shipmentNumber: string;
+            deliveryPartner: string;
             deliveryAddress: import("@prisma/client/runtime/library").JsonValue | null;
             deliveryNotes: string | null;
         })[];
@@ -300,21 +304,21 @@ export declare class OrdersService {
             product: {
                 id: string;
                 name: string;
-                price: import("@prisma/client/runtime/library").Decimal;
                 imageUrl: string;
+                price: import("@prisma/client/runtime/library").Decimal;
                 retailerId: string;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -342,6 +346,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -391,13 +396,13 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -425,6 +430,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -442,8 +448,8 @@ export declare class OrdersService {
             service: {
                 id: string;
                 name: string;
-                price: import("@prisma/client/runtime/library").Decimal;
                 imageUrl: string;
+                price: import("@prisma/client/runtime/library").Decimal;
             };
         } & {
             id: string;
@@ -464,20 +470,20 @@ export declare class OrdersService {
             product: {
                 id: string;
                 name: string;
-                price: import("@prisma/client/runtime/library").Decimal;
                 imageUrl: string;
+                price: import("@prisma/client/runtime/library").Decimal;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -505,6 +511,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -534,6 +541,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -563,6 +571,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -592,6 +601,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -621,6 +631,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -650,6 +661,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -679,6 +691,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -701,13 +714,13 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -735,6 +748,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -757,13 +771,13 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             currency: string | null;
             quantity: number;
             orderId: string;
             productId: string;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             totalPrice: import("@prisma/client/runtime/library").Decimal;
-            title: string | null;
             type: string | null;
             refId: string | null;
             subtotal: import("@prisma/client/runtime/library").Decimal | null;
@@ -791,6 +805,7 @@ export declare class OrdersService {
         escrowStatus: string | null;
         commissionAmount: import("@prisma/client/runtime/library").Decimal | null;
         commissionRate: import("@prisma/client/runtime/library").Decimal | null;
+        paystackReference: string | null;
         confirmedAt: Date | null;
         completedAt: Date | null;
         completionConfirmedAt: Date | null;
@@ -811,13 +826,13 @@ export declare class OrdersService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string | null;
         currency: string | null;
         quantity: number;
         orderId: string;
         productId: string;
         unitPrice: import("@prisma/client/runtime/library").Decimal;
         totalPrice: import("@prisma/client/runtime/library").Decimal;
-        title: string | null;
         type: string | null;
         refId: string | null;
         subtotal: import("@prisma/client/runtime/library").Decimal | null;

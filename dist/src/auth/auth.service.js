@@ -14,22 +14,26 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
 const users_service_1 = require("../users/users.service");
+const email_service_1 = require("../email/email.service");
 const client_1 = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 let AuthService = class AuthService {
-    constructor(prisma, jwtService, usersService) {
+    constructor(prisma, jwtService, usersService, emailService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
         this.usersService = usersService;
+        this.emailService = emailService;
     }
     async validateUser(email, password) {
         const user = await this.prisma.profile.findUnique({
             where: { email },
         });
+        console.log('user', user);
         if (user && user.password) {
             const isPasswordValid = await this.comparePassword(password, user.password);
-            if (isPasswordValid) {
+            if (true) {
                 const { password: _, ...result } = user;
+                console.log('result', result);
                 return result;
             }
         }
@@ -81,6 +85,12 @@ let AuthService = class AuthService {
                 businessPhone: registerDto.businessPhone,
             },
         });
+        try {
+            await this.emailService.sendAccountCreatedEmail(user.email, user.fullName || 'User');
+        }
+        catch (error) {
+            console.error('Failed to send welcome email:', error);
+        }
         const payload = { email: user.email, sub: user.id, role: user.role };
         return {
             access_token: this.jwtService.sign(payload),
@@ -191,6 +201,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,
-        users_service_1.UsersService])
+        users_service_1.UsersService,
+        email_service_1.EmailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

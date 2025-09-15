@@ -12,10 +12,16 @@ import { OrdersModule } from './orders/orders.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { PaymentsModule } from './payments/payments.module';
 import { TicketsModule } from './tickets/tickets.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { LiveShoppingModule } from './live-shopping/live-shopping.module';
+import { ManufacturerOrdersModule } from './manufacturer-orders/manufacturer-orders.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { CommissionModule } from './commission/commission.module';
 import { CmsModule } from './cms/cms.module';
 import { ProductCategoriesModule } from './product-categories/product-categories.module';
 import { ServiceCategoriesModule } from './service-categories/service-categories.module';
+import { EmailModule } from './email/email.module';
+import { EscrowModule } from './escrow/escrow.module';
 
 @Module({
   imports: [
@@ -32,10 +38,16 @@ import { ServiceCategoriesModule } from './service-categories/service-categories
     AppointmentsModule,
     PaymentsModule,
     TicketsModule,
+    ReviewsModule,
+    LiveShoppingModule,
+    ManufacturerOrdersModule,
+    AnalyticsModule,
     CommissionModule,
     CmsModule,
     ProductCategoriesModule,
     ServiceCategoriesModule,
+    EmailModule,
+    EscrowModule,
   ],
   controllers: [AppController],
   providers: [AppService],

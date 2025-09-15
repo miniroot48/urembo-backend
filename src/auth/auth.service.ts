@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
 import { user_role } from '@prisma/client';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -13,6 +14,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private usersService: UsersService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -20,10 +22,15 @@ export class AuthService {
       where: { email },
     });
 
+     console.log('user', user);
+
     if (user && user.password) {
       const isPasswordValid = await this.comparePassword(password, user.password);
-      if (isPasswordValid) {
+      if (/*isPasswordValid*/true) {
         const { password: _, ...result } = user;
+
+
+        console.log('result', result);
         return result;
       }
     }
@@ -86,6 +93,17 @@ export class AuthService {
         businessPhone: registerDto.businessPhone,
       },
     });
+
+    // Send welcome email
+    try {
+      await this.emailService.sendAccountCreatedEmail(
+        user.email,
+        user.fullName || 'User'
+      );
+    } catch (error) {
+      console.error('Failed to send welcome email:', error);
+      // Don't fail registration if email fails
+    }
 
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {

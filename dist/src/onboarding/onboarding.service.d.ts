@@ -1,4 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { user_role, onboarding_status } from '@prisma/client';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { UpdateRequirementDto } from './dto/update-requirement.dto';
@@ -7,7 +8,8 @@ import { ReviewSubmissionDto } from './dto/review-submission.dto';
 import { BulkSubmitDto } from './dto/bulk-submit.dto';
 export declare class OnboardingService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private emailService;
+    constructor(prisma: PrismaService, emailService: EmailService);
     createRequirement(createRequirementDto: CreateRequirementDto): Promise<{
         id: string;
         role: import(".prisma/client").$Enums.user_role;
@@ -293,6 +295,8 @@ export declare class OnboardingService {
             paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
             paymentAccountType: string | null;
             paymentDetailsVerified: boolean | null;
+            paystackSubaccountId: string | null;
+            paystackSubaccountVerified: boolean | null;
             createdAt: Date | null;
             updatedAt: Date | null;
         };

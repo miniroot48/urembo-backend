@@ -21,10 +21,16 @@ const orders_module_1 = require("./orders/orders.module");
 const appointments_module_1 = require("./appointments/appointments.module");
 const payments_module_1 = require("./payments/payments.module");
 const tickets_module_1 = require("./tickets/tickets.module");
+const reviews_module_1 = require("./reviews/reviews.module");
+const live_shopping_module_1 = require("./live-shopping/live-shopping.module");
+const manufacturer_orders_module_1 = require("./manufacturer-orders/manufacturer-orders.module");
+const analytics_module_1 = require("./analytics/analytics.module");
 const commission_module_1 = require("./commission/commission.module");
 const cms_module_1 = require("./cms/cms.module");
 const product_categories_module_1 = require("./product-categories/product-categories.module");
 const service_categories_module_1 = require("./service-categories/service-categories.module");
+const email_module_1 = require("./email/email.module");
+const escrow_module_1 = require("./escrow/escrow.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -44,10 +50,16 @@ exports.AppModule = AppModule = __decorate([
             appointments_module_1.AppointmentsModule,
             payments_module_1.PaymentsModule,
             tickets_module_1.TicketsModule,
+            reviews_module_1.ReviewsModule,
+            live_shopping_module_1.LiveShoppingModule,
+            manufacturer_orders_module_1.ManufacturerOrdersModule,
+            analytics_module_1.AnalyticsModule,
             commission_module_1.CommissionModule,
             cms_module_1.CmsModule,
             product_categories_module_1.ProductCategoriesModule,
             service_categories_module_1.ServiceCategoriesModule,
+            email_module_1.EmailModule,
+            escrow_module_1.EscrowModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

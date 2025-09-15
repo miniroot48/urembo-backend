@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const email_service_1 = require("../email/email.service");
 const client_1 = require("@prisma/client");
 let OrdersService = class OrdersService {
-    constructor(prisma) {
+    constructor(prisma, emailService) {
         this.prisma = prisma;
+        this.emailService = emailService;
     }
     async createOrder(userId, createOrderDto) {
         const { cartItems, ...orderData } = createOrderDto;
@@ -58,6 +60,18 @@ let OrdersService = class OrdersService {
             await this.prisma.serviceAppointment.createMany({
                 data: serviceAppointments,
             });
+        }
+        try {
+            const orderDataForEmail = {
+                orderId: order.id,
+                totalAmount: orderData.totalAmount,
+                currency: orderData.currency,
+                items: cartItems.map(item => item.name)
+            };
+            await this.emailService.sendNewOrderEmail(orderData.customerEmail, 'Customer', order.id, orderDataForEmail);
+        }
+        catch (error) {
+            console.error('Failed to send order confirmation email:', error);
         }
         return this.getOrderById(order.id);
     }
@@ -176,7 +190,8 @@ let OrdersService = class OrdersService {
         if (!canUpdate) {
             throw new common_1.ForbiddenException('You cannot update this order');
         }
-        return this.prisma.order.update({
+        const oldStatus = order.status;
+        const updatedOrder = await this.prisma.order.update({
             where: { id },
             data: updateOrderDto,
             include: {
@@ -219,6 +234,32 @@ let OrdersService = class OrdersService {
                 },
             },
         });
+        try {
+            const newStatus = updateOrderDto.status;
+            if (newStatus && newStatus !== oldStatus) {
+                const customerEmail = order.user?.email || order.customerEmail;
+                const customerName = order.user?.fullName || 'Customer';
+                const orderData = {
+                    orderId: order.id,
+                    totalAmount: order.totalAmount,
+                    currency: order.currency,
+                    items: order.orderItems.map(item => item.title)
+                };
+                if (newStatus === client_1.order_status.confirmed) {
+                    await this.emailService.sendOrderAcceptedEmail(customerEmail, customerName, order.id, orderData);
+                }
+                else if (newStatus === client_1.order_status.shipped) {
+                    await this.emailService.sendOrderShippedEmail(customerEmail, customerName, order.id, 'TRK123456789');
+                }
+                else if (newStatus === client_1.order_status.delivered) {
+                    await this.emailService.sendOrderDeliveredEmail(customerEmail, customerName, order.id);
+                }
+            }
+        }
+        catch (error) {
+            console.error('Failed to send order status email:', error);
+        }
+        return updatedOrder;
     }
     async getUserOrders(userId) {
         const orders = await this.prisma.order.findMany({
@@ -480,6 +521,7 @@ let OrdersService = class OrdersService {
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        email_service_1.EmailService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

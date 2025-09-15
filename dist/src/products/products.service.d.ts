@@ -31,10 +31,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -70,10 +70,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -109,10 +109,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -148,10 +148,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -168,10 +168,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -207,10 +207,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -246,10 +246,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -285,10 +285,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -324,10 +324,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -344,10 +344,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -364,10 +364,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -403,10 +403,10 @@ export declare class ProductsService {
         name: string;
         description: string | null;
         isActive: boolean;
+        imageUrl: string | null;
         price: import("@prisma/client/runtime/library").Decimal;
         currency: string;
         stockQuantity: number;
-        imageUrl: string | null;
         categoryId: string | null;
         subcategoryId: string | null;
         sku: string | null;
@@ -425,9 +425,8 @@ export declare class ProductsService {
         description: string;
         position: number;
         isActive: boolean;
-        imageUrl: string;
         slug: string;
-        parentId: string;
+        imageUrl: string;
         parent: {
             id: string;
             name: string;
@@ -440,6 +439,7 @@ export declare class ProductsService {
             position: number;
             slug: string;
         }[];
+        parentId: string;
     }[]>;
     getProductCategoryById(id: string): Promise<{
         level: number;
@@ -450,16 +450,15 @@ export declare class ProductsService {
             id: string;
             name: string;
             isActive: boolean;
-            price: import("@prisma/client/runtime/library").Decimal;
             imageUrl: string;
+            price: import("@prisma/client/runtime/library").Decimal;
         }[];
         name: string;
         description: string;
         position: number;
         isActive: boolean;
-        imageUrl: string;
         slug: string;
-        parentId: string;
+        imageUrl: string;
         parent: {
             id: string;
             name: string;
@@ -472,9 +471,10 @@ export declare class ProductsService {
             name: string;
             description: string;
             position: number;
-            imageUrl: string;
             slug: string;
+            imageUrl: string;
         }[];
+        parentId: string;
     }>;
     bulkUpdateIndividualPrices(userId: string, userRole: user_role, updates: {
         productId: string;

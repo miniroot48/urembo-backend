@@ -11,63 +11,57 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRequirementDto = void 0;
 const class_validator_1 = require("class-validator");
-const client_1 = require("@prisma/client");
 class CreateRequirementDto {
 }
 exports.CreateRequirementDto = CreateRequirementDto;
 __decorate([
-    (0, class_validator_1.IsEnum)(client_1.user_role),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsEnum)(['client', 'vendor', 'retailer', 'admin', 'manufacturer']),
     __metadata("design:type", String)
 ], CreateRequirementDto.prototype, "role", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateRequirementDto.prototype, "label", void 0);
 __decorate([
-    (0, class_validator_1.IsEnum)(client_1.onboarding_field_type),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsEnum)(['text', 'textarea', 'select', 'file', 'email', 'phone', 'url', 'rich_text']),
     __metadata("design:type", String)
 ], CreateRequirementDto.prototype, "fieldType", void 0);
 __decorate([
     (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], CreateRequirementDto.prototype, "isMandatory", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateRequirementDto.prototype, "description", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateRequirementDto.prototype, "placeholder", void 0);
 __decorate([
-    (0, class_validator_1.IsObject)(),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    __metadata("design:type", Array)
 ], CreateRequirementDto.prototype, "selectOptions", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], CreateRequirementDto.prototype, "position", void 0);
 __decorate([
     (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], CreateRequirementDto.prototype, "isActive", void 0);
 __decorate([
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], CreateRequirementDto.prototype, "isPaymentRelated", void 0);
 __decorate([
-    (0, class_validator_1.IsObject)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsObject)(),
     __metadata("design:type", Object)
 ], CreateRequirementDto.prototype, "validationRules", void 0);
 //# sourceMappingURL=create-requirement.dto.js.map

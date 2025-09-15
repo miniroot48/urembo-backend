@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const email_service_1 = require("../email/email.service");
 const client_1 = require("@prisma/client");
 let AppointmentsService = class AppointmentsService {
-    constructor(prisma) {
+    constructor(prisma, emailService) {
         this.prisma = prisma;
+        this.emailService = emailService;
     }
     async createAppointment(createAppointmentDto) {
         const service = await this.prisma.service.findFirst({
@@ -55,7 +57,7 @@ let AppointmentsService = class AppointmentsService {
         const endTime = createAppointmentDto.endTime
             ? new Date(createAppointmentDto.endTime)
             : new Date(startTime.getTime() + createAppointmentDto.durationMinutes * 60000);
-        return this.prisma.appointment.create({
+        const appointment = await this.prisma.appointment.create({
             data: {
                 ...createAppointmentDto,
                 appointmentDate,
@@ -95,6 +97,22 @@ let AppointmentsService = class AppointmentsService {
                 },
             },
         });
+        try {
+            const bookingData = {
+                bookingId: appointment.id,
+                serviceName: appointment.service.name,
+                appointmentDate: appointment.appointmentDate,
+                startTime: appointment.startTime,
+                endTime: appointment.endTime,
+                price: appointment.service.price,
+                currency: appointment.currency
+            };
+            await this.emailService.sendBookingConfirmedClientEmail(appointment.client.email, appointment.client.fullName || 'Customer', bookingData);
+        }
+        catch (error) {
+            console.error('Failed to send booking confirmation email:', error);
+        }
+        return appointment;
     }
     async getAllAppointments(limit) {
         const queryOptions = {
@@ -563,6 +581,7 @@ let AppointmentsService = class AppointmentsService {
 exports.AppointmentsService = AppointmentsService;
 exports.AppointmentsService = AppointmentsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        email_service_1.EmailService])
 ], AppointmentsService);
 //# sourceMappingURL=appointments.service.js.map

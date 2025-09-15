@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OnboardingService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const email_service_1 = require("../email/email.service");
 const client_1 = require("@prisma/client");
 let OnboardingService = class OnboardingService {
-    constructor(prisma) {
+    constructor(prisma, emailService) {
         this.prisma = prisma;
+        this.emailService = emailService;
     }
     async createRequirement(createRequirementDto) {
         return this.prisma.onboardingRequirement.create({
@@ -302,6 +304,17 @@ let OnboardingService = class OnboardingService {
                 rejectionReason,
             },
         });
+        try {
+            if (status === client_1.onboarding_status.approved) {
+                await this.emailService.sendProfileApprovedEmail(user.email, user.fullName || 'User');
+            }
+            else if (status === client_1.onboarding_status.rejected) {
+                await this.emailService.sendProfileRejectedEmail(user.email, user.fullName || 'User', rejectionReason || 'Profile requirements not met');
+            }
+        }
+        catch (error) {
+            console.error('Failed to send onboarding status email:', error);
+        }
         return {
             user: updatedUser,
             review,
@@ -404,6 +417,7 @@ let OnboardingService = class OnboardingService {
 exports.OnboardingService = OnboardingService;
 exports.OnboardingService = OnboardingService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        email_service_1.EmailService])
 ], OnboardingService);
 //# sourceMappingURL=onboarding.service.js.map

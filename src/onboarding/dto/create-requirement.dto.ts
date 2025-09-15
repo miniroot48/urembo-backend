@@ -1,48 +1,42 @@
-import { IsString, IsNotEmpty, IsEnum, IsBoolean, IsOptional, IsInt, IsObject } from 'class-validator';
-import { user_role, onboarding_field_type } from '@prisma/client';
+import { IsString, IsEnum, IsBoolean, IsOptional, IsArray, IsInt, IsObject } from 'class-validator';
 
 export class CreateRequirementDto {
-  @IsEnum(user_role)
-  @IsNotEmpty()
-  role: user_role;
+  @IsEnum(['client', 'vendor', 'retailer', 'admin', 'manufacturer'])
+  role: 'client' | 'vendor' | 'retailer' | 'admin' | 'manufacturer';
 
   @IsString()
-  @IsNotEmpty()
   label: string;
 
-  @IsEnum(onboarding_field_type)
-  @IsNotEmpty()
-  fieldType: onboarding_field_type;
+  @IsEnum(['text', 'textarea', 'select', 'file', 'email', 'phone', 'url', 'rich_text'])
+  fieldType: 'text' | 'textarea' | 'select' | 'file' | 'email' | 'phone' | 'url' | 'rich_text';
 
   @IsBoolean()
-  @IsOptional()
-  isMandatory?: boolean;
+  isMandatory: boolean;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   description?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   placeholder?: string;
 
-  @IsObject()
   @IsOptional()
-  selectOptions?: any;
+  @IsArray()
+  @IsString({ each: true })
+  selectOptions?: string[];
 
   @IsInt()
-  @IsOptional()
-  position?: number;
+  position: number;
 
   @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
+  isActive: boolean;
 
-  @IsBoolean()
   @IsOptional()
+  @IsBoolean()
   isPaymentRelated?: boolean;
 
-  @IsObject()
   @IsOptional()
+  @IsObject()
   validationRules?: any;
 }

@@ -19,18 +19,69 @@ let PaymentsController = class PaymentsController {
     constructor(paymentsService) {
         this.paymentsService = paymentsService;
     }
-    async processPayment(paymentData) {
-        return this.paymentsService.processPayment(paymentData.orderId, paymentData);
+    async initializePayment(paymentData) {
+        return this.paymentsService.initializePayment(paymentData);
+    }
+    async processPayment(orderId, paymentData) {
+        return this.paymentsService.processPayment(orderId, paymentData);
+    }
+    async verifyPayment(reference) {
+        return this.paymentsService.verifyPayment(reference);
+    }
+    async handlePaymentCallback(reference) {
+        return this.paymentsService.handlePaymentCallback(reference);
+    }
+    async processRefund(orderId, body) {
+        return this.paymentsService.processRefund(orderId, body.reason);
+    }
+    async getPaymentStats() {
+        return this.paymentsService.getPaymentStats();
     }
 };
 exports.PaymentsController = PaymentsController;
 __decorate([
-    (0, common_1.Post)('process'),
+    (0, common_1.Post)('initialize'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "initializePayment", null);
+__decorate([
+    (0, common_1.Post)('process/:orderId'),
+    __param(0, (0, common_1.Param)('orderId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "processPayment", null);
+__decorate([
+    (0, common_1.Get)('verify/:reference'),
+    __param(0, (0, common_1.Param)('reference')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "verifyPayment", null);
+__decorate([
+    (0, common_1.Post)('callback/:reference'),
+    __param(0, (0, common_1.Param)('reference')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "handlePaymentCallback", null);
+__decorate([
+    (0, common_1.Post)('refund/:orderId'),
+    __param(0, (0, common_1.Param)('orderId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "processRefund", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "getPaymentStats", null);
 exports.PaymentsController = PaymentsController = __decorate([
     (0, common_1.Controller)('payments'),
     __metadata("design:paramtypes", [payments_service_1.PaymentsService])

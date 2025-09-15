@@ -318,6 +318,8 @@ export declare class OnboardingController {
             paymentAccountDetails: import("@prisma/client/runtime/library").JsonValue | null;
             paymentAccountType: string | null;
             paymentDetailsVerified: boolean | null;
+            paystackSubaccountId: string | null;
+            paystackSubaccountVerified: boolean | null;
             createdAt: Date | null;
             updatedAt: Date | null;
         };

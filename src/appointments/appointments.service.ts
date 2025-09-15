@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { booking_status, appointment_status_enhanced } from '@prisma/client';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
@@ -7,7 +8,10 @@ import { UpdateAppointmentStatusDto } from './dto/update-appointment-status.dto'
 
 @Injectable()
 export class AppointmentsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async createAppointment(createAppointmentDto: CreateAppointmentDto) {
     // Validate that the service exists and belongs to the vendor
@@ -59,7 +63,7 @@ export class AppointmentsService {
       ? new Date(createAppointmentDto.endTime)
       : new Date(startTime.getTime() + createAppointmentDto.durationMinutes * 60000);
 
-    return this.prisma.appointment.create({
+    const appointment = await this.prisma.appointment.create({
       data: {
         ...createAppointmentDto,
         appointmentDate,
@@ -99,6 +103,29 @@ export class AppointmentsService {
         },
       },
     });
+
+    // Send booking confirmation email
+    try {
+      const bookingData = {
+        bookingId: appointment.id,
+        serviceName: appointment.service.name,
+        appointmentDate: appointment.appointmentDate,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+        price: appointment.service.price,
+        currency: appointment.currency
+      };
+      await this.emailService.sendBookingConfirmedClientEmail(
+        appointment.client.email,
+        appointment.client.fullName || 'Customer',
+        bookingData
+      );
+    } catch (error) {
+      console.error('Failed to send booking confirmation email:', error);
+      // Don't fail appointment creation if email fails
+    }
+
+    return appointment;
   }
 
   async getAllAppointments(limit?: number) {

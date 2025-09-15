@@ -1,14 +1,13 @@
-import { user_role, onboarding_field_type } from '@prisma/client';
 export declare class CreateRequirementDto {
-    role: user_role;
+    role: 'client' | 'vendor' | 'retailer' | 'admin' | 'manufacturer';
     label: string;
-    fieldType: onboarding_field_type;
-    isMandatory?: boolean;
+    fieldType: 'text' | 'textarea' | 'select' | 'file' | 'email' | 'phone' | 'url' | 'rich_text';
+    isMandatory: boolean;
     description?: string;
     placeholder?: string;
-    selectOptions?: any;
-    position?: number;
-    isActive?: boolean;
+    selectOptions?: string[];
+    position: number;
+    isActive: boolean;
     isPaymentRelated?: boolean;
     validationRules?: any;
 }
