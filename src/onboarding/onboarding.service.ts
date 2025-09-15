@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { user_role, onboarding_status, onboarding_field_type } from '@prisma/client';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { UpdateRequirementDto } from './dto/update-requirement.dto';
@@ -9,7 +10,10 @@ import { BulkSubmitDto } from './dto/bulk-submit.dto';
 
 @Injectable()
 export class OnboardingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   // Requirements Management
   async createRequirement(createRequirementDto: CreateRequirementDto) {
@@ -345,6 +349,25 @@ export class OnboardingService {
         rejectionReason,
       },
     });
+
+    // Send appropriate email based on status
+    try {
+      if (status === onboarding_status.approved) {
+        await this.emailService.sendProfileApprovedEmail(
+          user.email,
+          user.fullName || 'User'
+        );
+      } else if (status === onboarding_status.rejected) {
+        await this.emailService.sendProfileRejectedEmail(
+          user.email,
+          user.fullName || 'User',
+          rejectionReason || 'Profile requirements not met'
+        );
+      }
+    } catch (error) {
+      console.error('Failed to send onboarding status email:', error);
+      // Don't fail the status update if email fails
+    }
 
     return {
       user: updatedUser,

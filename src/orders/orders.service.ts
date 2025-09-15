@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { order_status, order_status_enhanced } from '@prisma/client';
 
 export interface CreateOrderDto {
@@ -43,7 +44,10 @@ export interface UpdateOrderDto {
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async createOrder(userId: string | null, createOrderDto: CreateOrderDto) {
     const { cartItems, ...orderData } = createOrderDto;
@@ -96,6 +100,25 @@ export class OrdersService {
       await this.prisma.serviceAppointment.createMany({
         data: serviceAppointments,
       });
+    }
+
+    // Send order confirmation email
+    try {
+      const orderDataForEmail = {
+        orderId: order.id,
+        totalAmount: orderData.totalAmount,
+        currency: orderData.currency,
+        items: cartItems.map(item => item.name)
+      };
+      await this.emailService.sendNewOrderEmail(
+        orderData.customerEmail,
+        'Customer',
+        order.id,
+        orderDataForEmail
+      );
+    } catch (error) {
+      console.error('Failed to send order confirmation email:', error);
+      // Don't fail order creation if email fails
     }
 
     return this.getOrderById(order.id);
@@ -227,7 +250,10 @@ export class OrdersService {
       throw new ForbiddenException('You cannot update this order');
     }
 
-    return this.prisma.order.update({
+    // Store old status for comparison
+    const oldStatus = order.status;
+
+    const updatedOrder = await this.prisma.order.update({
       where: { id },
       data: updateOrderDto,
       include: {
@@ -270,6 +296,48 @@ export class OrdersService {
         },
       },
     });
+
+    // Send email notification if status changed
+    try {
+      const newStatus = updateOrderDto.status;
+      if (newStatus && newStatus !== oldStatus) {
+        const customerEmail = order.user?.email || order.customerEmail;
+        const customerName = order.user?.fullName || 'Customer';
+        const orderData = {
+          orderId: order.id,
+          totalAmount: order.totalAmount,
+          currency: order.currency,
+          items: order.orderItems.map(item => item.title)
+        };
+        
+        if (newStatus === order_status.confirmed) {
+          await this.emailService.sendOrderAcceptedEmail(
+            customerEmail,
+            customerName,
+            order.id,
+            orderData
+          );
+        } else if (newStatus === order_status.shipped) {
+          await this.emailService.sendOrderShippedEmail(
+            customerEmail,
+            customerName,
+            order.id,
+            'TRK123456789'
+          );
+        } else if (newStatus === order_status.delivered) {
+          await this.emailService.sendOrderDeliveredEmail(
+            customerEmail,
+            customerName,
+            order.id
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send order status email:', error);
+      // Don't fail order update if email fails
+    }
+
+    return updatedOrder;
   }
 
   async getUserOrders(userId: string) {
