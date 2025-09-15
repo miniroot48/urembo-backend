@@ -25,6 +25,7 @@ import { EscrowModule } from './escrow/escrow.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { PasswordResetModule } from './auth/password-reset.module';
 import { AdminModule } from './admin/admin.module';
+import { StaffAssignmentsModule } from './staff-assignments/staff-assignments.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { AdminModule } from './admin/admin.module';
     WishlistModule,
     PasswordResetModule,
     AdminModule,
+    StaffAssignmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
