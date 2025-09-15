@@ -22,6 +22,9 @@ import { ProductCategoriesModule } from './product-categories/product-categories
 import { ServiceCategoriesModule } from './service-categories/service-categories.module';
 import { EmailModule } from './email/email.module';
 import { EscrowModule } from './escrow/escrow.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { PasswordResetModule } from './auth/password-reset.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -48,6 +51,9 @@ import { EscrowModule } from './escrow/escrow.module';
     ServiceCategoriesModule,
     EmailModule,
     EscrowModule,
+    WishlistModule,
+    PasswordResetModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

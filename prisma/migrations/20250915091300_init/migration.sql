@@ -2,7 +2,7 @@
 CREATE TYPE "public"."user_role" AS ENUM ('client', 'vendor', 'retailer', 'admin', 'manufacturer');
 
 -- CreateEnum
-CREATE TYPE "public"."order_status" AS ENUM ('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'pending_confirmation', 'confirmed');
+CREATE TYPE "public"."order_status" AS ENUM ('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'pending_confirmation', 'confirmed', 'completed');
 
 -- CreateEnum
 CREATE TYPE "public"."order_status_enhanced" AS ENUM ('pending', 'paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'refunded', 'disputed');
@@ -38,6 +38,7 @@ CREATE TYPE "public"."onboarding_field_type" AS ENUM ('text', 'textarea', 'selec
 CREATE TABLE "public"."profiles" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "full_name" TEXT,
     "phone" TEXT,
     "avatar_url" TEXT,
@@ -55,6 +56,8 @@ CREATE TABLE "public"."profiles" (
     "payment_account_details" JSONB,
     "payment_account_type" TEXT,
     "payment_details_verified" BOOLEAN DEFAULT false,
+    "paystack_subaccount_id" TEXT,
+    "paystack_subaccount_verified" BOOLEAN DEFAULT false,
     "created_at" TIMESTAMP(3),
     "updated_at" TIMESTAMP(3),
 
@@ -70,8 +73,8 @@ CREATE TABLE "public"."products" (
     "currency" TEXT NOT NULL DEFAULT 'USD',
     "stock_quantity" INTEGER NOT NULL DEFAULT 0,
     "image_url" TEXT,
-    "category" TEXT,
-    "subcategory" TEXT,
+    "category_id" TEXT,
+    "subcategory_id" TEXT,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "retailer_id" TEXT NOT NULL,
     "manufacturer_id" TEXT,
@@ -99,6 +102,7 @@ CREATE TABLE "public"."services" (
     "subcategory_id" TEXT,
     "actual_service_id" TEXT,
     "delivery_method" TEXT,
+    "tags" TEXT[],
     "metadata" JSONB,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "vendor_id" TEXT NOT NULL,
@@ -130,6 +134,7 @@ CREATE TABLE "public"."orders" (
     "escrow_status" TEXT,
     "commission_amount" DECIMAL(10,2),
     "commission_rate" DECIMAL(5,2),
+    "paystack_reference" TEXT,
     "confirmed_at" TIMESTAMP(3),
     "completed_at" TIMESTAMP(3),
     "completion_confirmed_at" TIMESTAMP(3),
@@ -498,9 +503,22 @@ CREATE TABLE "public"."wishlist" (
     "user_id" TEXT NOT NULL,
     "item_id" TEXT NOT NULL,
     "item_type" TEXT NOT NULL,
+    "product_id" TEXT,
+    "service_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "wishlist_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."password_reset_requests" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "otp" TEXT NOT NULL,
+    "expires_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "password_reset_requests_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -521,7 +539,7 @@ CREATE TABLE "public"."service_categories" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."product_categories_new" (
+CREATE TABLE "public"."product_categories" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
@@ -534,7 +552,7 @@ CREATE TABLE "public"."product_categories_new" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "product_categories_new_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_categories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -614,6 +632,273 @@ CREATE TABLE "public"."onboarding_reviews" (
     CONSTRAINT "onboarding_reviews_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."cms_banners" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "subtitle" TEXT,
+    "image_url" TEXT NOT NULL,
+    "mobile_image_url" TEXT,
+    "cta_text" TEXT,
+    "cta_link" TEXT,
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_banners_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_featured_items" (
+    "id" TEXT NOT NULL,
+    "item_type" TEXT NOT NULL,
+    "item_id" TEXT NOT NULL,
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_featured_items_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_footer_content" (
+    "id" TEXT NOT NULL,
+    "section_key" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" JSONB NOT NULL DEFAULT '{}',
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_footer_content_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_page_banners" (
+    "id" TEXT NOT NULL,
+    "page_route" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "subtitle" TEXT,
+    "image_url" TEXT NOT NULL,
+    "mobile_image_url" TEXT,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_page_banners_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_popups" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "popup_type" TEXT NOT NULL,
+    "target_pages" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "start_date" TIMESTAMP(3),
+    "end_date" TIMESTAMP(3),
+    "max_displays_per_session" INTEGER NOT NULL DEFAULT 1,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_popups_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_theme_settings" (
+    "id" TEXT NOT NULL,
+    "setting_key" TEXT NOT NULL,
+    "setting_value" TEXT NOT NULL,
+    "setting_type" TEXT NOT NULL,
+    "description" TEXT,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_theme_settings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_category_banners" (
+    "id" TEXT NOT NULL,
+    "category_slug" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "subtitle" TEXT,
+    "image_url" TEXT NOT NULL,
+    "mobile_image_url" TEXT,
+    "cta_text" TEXT,
+    "cta_url" TEXT,
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_category_banners_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_categories" (
+    "id" TEXT NOT NULL,
+    "category_type" TEXT NOT NULL,
+    "image_url" TEXT NOT NULL,
+    "provider_count" INTEGER NOT NULL,
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "category_id" TEXT,
+    "subcategory_id" TEXT,
+    "product_category_id" TEXT,
+    "product_subcategory_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_categories_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_promotional_cards" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "subtitle" TEXT,
+    "description" TEXT,
+    "image_url" TEXT NOT NULL,
+    "cta_text" TEXT,
+    "cta_link" TEXT,
+    "background_color" TEXT NOT NULL DEFAULT '#ffffff',
+    "text_color" TEXT NOT NULL DEFAULT '#000000',
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_promotional_cards_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."cms_pages" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT,
+    "content" TEXT,
+    "content_type" TEXT NOT NULL DEFAULT 'text',
+    "pdf_url" TEXT,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_pages_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."live_shopping_sessions" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "vendor_id" TEXT NOT NULL,
+    "retailer_id" TEXT,
+    "scheduled_at" TIMESTAMP(3) NOT NULL,
+    "started_at" TIMESTAMP(3),
+    "ended_at" TIMESTAMP(3),
+    "actual_start" TIMESTAMP(3),
+    "actual_end" TIMESTAMP(3),
+    "status" TEXT NOT NULL DEFAULT 'scheduled',
+    "thumbnail_url" TEXT,
+    "stream_url" TEXT,
+    "viewer_count" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "live_shopping_sessions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."live_session_products" (
+    "id" TEXT NOT NULL,
+    "session_id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
+    "is_featured" BOOLEAN NOT NULL DEFAULT false,
+    "is_currently_featured" BOOLEAN NOT NULL DEFAULT false,
+    "featured_at" TIMESTAMP(3),
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "live_session_products_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."live_session_messages" (
+    "id" TEXT NOT NULL,
+    "session_id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "message_type" TEXT NOT NULL DEFAULT 'text',
+    "is_moderator" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "live_session_messages_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."live_session_participants" (
+    "id" TEXT NOT NULL,
+    "session_id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "joined_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "left_at" TIMESTAMP(3),
+    "last_seen_at" TIMESTAMP(3),
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+
+    CONSTRAINT "live_session_participants_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."manufacturer_orders" (
+    "id" TEXT NOT NULL,
+    "retailer_id" TEXT NOT NULL,
+    "manufacturer_id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "unit_price" DECIMAL(10,2) NOT NULL,
+    "subtotal" DECIMAL(10,2),
+    "discount" DECIMAL(5,2) DEFAULT 0,
+    "tax" DECIMAL(5,2) DEFAULT 0,
+    "shippingCost" DECIMAL(10,2) DEFAULT 0,
+    "total_amount" DECIMAL(10,2) NOT NULL,
+    "currency" TEXT NOT NULL DEFAULT 'USD',
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "requested_delivery_date" TIMESTAMP(3),
+    "estimated_delivery_date" TIMESTAMP(3),
+    "actual_delivery_date" TIMESTAMP(3),
+    "tracking_number" TEXT,
+    "notes" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "manufacturer_orders_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."reviews" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "item_id" TEXT NOT NULL,
+    "item_type" TEXT NOT NULL,
+    "rating" INTEGER NOT NULL,
+    "title" TEXT,
+    "comment" TEXT,
+    "is_verified" BOOLEAN NOT NULL DEFAULT false,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "profiles_email_key" ON "public"."profiles"("email");
 
@@ -639,16 +924,49 @@ CREATE UNIQUE INDEX "staff_assignments_user_id_role_key" ON "public"."staff_assi
 CREATE UNIQUE INDEX "shipments_shipment_number_key" ON "public"."shipments"("shipment_number");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "password_reset_requests_email_key" ON "public"."password_reset_requests"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "service_categories_slug_key" ON "public"."service_categories"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "product_categories_new_slug_key" ON "public"."product_categories_new"("slug");
+CREATE UNIQUE INDEX "product_categories_slug_key" ON "public"."product_categories"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "onboarding_submissions_user_id_requirement_id_key" ON "public"."onboarding_submissions"("user_id", "requirement_id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "cms_featured_items_item_type_item_id_key" ON "public"."cms_featured_items"("item_type", "item_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "cms_footer_content_section_key_key" ON "public"."cms_footer_content"("section_key");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "cms_page_banners_page_route_key" ON "public"."cms_page_banners"("page_route");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "cms_theme_settings_setting_key_key" ON "public"."cms_theme_settings"("setting_key");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "cms_pages_slug_key" ON "public"."cms_pages"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "live_session_products_session_id_product_id_key" ON "public"."live_session_products"("session_id", "product_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "live_session_participants_session_id_user_id_key" ON "public"."live_session_participants"("session_id", "user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "reviews_user_id_item_id_item_type_key" ON "public"."reviews"("user_id", "item_id", "item_type");
+
 -- AddForeignKey
 ALTER TABLE "public"."products" ADD CONSTRAINT "products_retailer_id_fkey" FOREIGN KEY ("retailer_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."products" ADD CONSTRAINT "products_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."products" ADD CONSTRAINT "products_subcategory_id_fkey" FOREIGN KEY ("subcategory_id") REFERENCES "public"."product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."services" ADD CONSTRAINT "services_vendor_id_fkey" FOREIGN KEY ("vendor_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -750,10 +1068,16 @@ ALTER TABLE "public"."notifications" ADD CONSTRAINT "notifications_user_id_fkey"
 ALTER TABLE "public"."wishlist" ADD CONSTRAINT "wishlist_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "public"."wishlist" ADD CONSTRAINT "wishlist_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."wishlist" ADD CONSTRAINT "wishlist_service_id_fkey" FOREIGN KEY ("service_id") REFERENCES "public"."services"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "public"."service_categories" ADD CONSTRAINT "service_categories_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "public"."service_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."product_categories_new" ADD CONSTRAINT "product_categories_new_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "public"."product_categories_new"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."product_categories" ADD CONSTRAINT "product_categories_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "public"."product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."staff" ADD CONSTRAINT "staff_vendor_id_fkey" FOREIGN KEY ("vendor_id") REFERENCES "public"."profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -781,3 +1105,39 @@ ALTER TABLE "public"."onboarding_reviews" ADD CONSTRAINT "onboarding_reviews_use
 
 -- AddForeignKey
 ALTER TABLE "public"."onboarding_reviews" ADD CONSTRAINT "onboarding_reviews_admin_id_fkey" FOREIGN KEY ("admin_id") REFERENCES "public"."profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_shopping_sessions" ADD CONSTRAINT "live_shopping_sessions_vendor_id_fkey" FOREIGN KEY ("vendor_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_shopping_sessions" ADD CONSTRAINT "live_shopping_sessions_retailer_id_fkey" FOREIGN KEY ("retailer_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_session_products" ADD CONSTRAINT "live_session_products_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "public"."live_shopping_sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_session_products" ADD CONSTRAINT "live_session_products_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_session_messages" ADD CONSTRAINT "live_session_messages_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "public"."live_shopping_sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_session_messages" ADD CONSTRAINT "live_session_messages_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_session_participants" ADD CONSTRAINT "live_session_participants_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "public"."live_shopping_sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."live_session_participants" ADD CONSTRAINT "live_session_participants_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."manufacturer_orders" ADD CONSTRAINT "manufacturer_orders_retailer_id_fkey" FOREIGN KEY ("retailer_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."manufacturer_orders" ADD CONSTRAINT "manufacturer_orders_manufacturer_id_fkey" FOREIGN KEY ("manufacturer_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."manufacturer_orders" ADD CONSTRAINT "manufacturer_orders_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."reviews" ADD CONSTRAINT "reviews_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -279,6 +279,69 @@ export class EmailService {
     });
   }
 
+  async sendAdminSignupNotificationEmail(adminEmail: string, userData: any): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getAdminSignupNotificationTemplate(userData);
+    return this.sendEmail({
+      to: adminEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
+  async sendAdminTicketNotificationEmail(adminEmail: string, ticketData: any): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getAdminTicketNotificationTemplate(ticketData);
+    return this.sendEmail({
+      to: adminEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
+  async sendAdminSaleNotificationEmail(adminEmail: string, saleData: any): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getAdminSaleNotificationTemplate(saleData);
+    return this.sendEmail({
+      to: adminEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
+  async sendAdminCartNotificationEmail(adminEmail: string, cartData: any): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getAdminCartNotificationTemplate(cartData);
+    return this.sendEmail({
+      to: adminEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
+  async sendPasswordResetOTPEmail(userEmail: string, userName: string, otp: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getPasswordResetOTPTemplate(userName, otp);
+    return this.sendEmail({
+      to: userEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
+  async sendPartnerSignupNotificationEmail(partnerEmail: string, partnerName: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getPartnerSignupNotificationTemplate(partnerName);
+    return this.sendEmail({
+      to: partnerEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
+  async sendPartnerApprovalEmail(partnerEmail: string, partnerName: string, approved: boolean, reason?: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const template = this.getPartnerApprovalTemplate(partnerName, approved, reason);
+    return this.sendEmail({
+      to: partnerEmail,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
   // Email Templates
   private getWelcomeTemplate(userName: string): EmailTemplate {
     return {
@@ -666,6 +729,160 @@ export class EmailService {
             <li><strong>Vendor:</strong> ${orderData.vendor_name || 'N/A'}</li>
             <li><strong>Date:</strong> ${orderData.order_date || 'N/A'}</li>
           </ul>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getAdminSignupNotificationTemplate(userData: any): EmailTemplate {
+    return {
+      subject: `New ${userData.role} Signup - ${userData.fullName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #007bff; text-align: center;">New User Signup</h1>
+          <p>A new user has signed up:</p>
+          <ul>
+            <li><strong>Name:</strong> ${userData.fullName || 'N/A'}</li>
+            <li><strong>Email:</strong> ${userData.email || 'N/A'}</li>
+            <li><strong>Role:</strong> ${userData.role || 'N/A'}</li>
+            <li><strong>Business Name:</strong> ${userData.businessName || 'N/A'}</li>
+            <li><strong>Signup Date:</strong> ${userData.createdAt || new Date().toLocaleDateString()}</li>
+          </ul>
+          <p>Please review their profile and approve if necessary.</p>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getAdminTicketNotificationTemplate(ticketData: any): EmailTemplate {
+    return {
+      subject: `New Support Ticket - ${ticketData.subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #dc3545; text-align: center;">New Support Ticket</h1>
+          <p>A new support ticket has been raised:</p>
+          <ul>
+            <li><strong>Ticket ID:</strong> ${ticketData.id || 'N/A'}</li>
+            <li><strong>Subject:</strong> ${ticketData.subject || 'N/A'}</li>
+            <li><strong>Priority:</strong> ${ticketData.priority || 'N/A'}</li>
+            <li><strong>Category:</strong> ${ticketData.category || 'N/A'}</li>
+            <li><strong>User:</strong> ${ticketData.userName || 'N/A'} (${ticketData.userEmail || 'N/A'})</li>
+            <li><strong>Description:</strong> ${ticketData.description || 'N/A'}</li>
+            <li><strong>Created:</strong> ${ticketData.createdAt || new Date().toLocaleDateString()}</li>
+          </ul>
+          <p>Please review and respond to this ticket.</p>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getAdminSaleNotificationTemplate(saleData: any): EmailTemplate {
+    return {
+      subject: `New Sale - ${saleData.amount}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #28a745; text-align: center;">New Sale Completed</h1>
+          <p>A new sale has been completed:</p>
+          <ul>
+            <li><strong>Transaction ID:</strong> ${saleData.transactionId || 'N/A'}</li>
+            <li><strong>Amount:</strong> ${saleData.amount || 'N/A'}</li>
+            <li><strong>Currency:</strong> ${saleData.currency || 'N/A'}</li>
+            <li><strong>Customer:</strong> ${saleData.customerName || 'N/A'}</li>
+            <li><strong>Vendor:</strong> ${saleData.vendorName || 'N/A'}</li>
+            <li><strong>Commission:</strong> ${saleData.commission || 'N/A'}</li>
+            <li><strong>Date:</strong> ${saleData.createdAt || new Date().toLocaleDateString()}</li>
+          </ul>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getAdminCartNotificationTemplate(cartData: any): EmailTemplate {
+    return {
+      subject: `Order Added to Cart - ${cartData.totalAmount}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ffc107; text-align: center;">Order Added to Cart</h1>
+          <p>An order has been added to cart:</p>
+          <ul>
+            <li><strong>Customer:</strong> ${cartData.customerName || 'N/A'}</li>
+            <li><strong>Email:</strong> ${cartData.customerEmail || 'N/A'}</li>
+            <li><strong>Total Amount:</strong> ${cartData.totalAmount || 'N/A'}</li>
+            <li><strong>Items Count:</strong> ${cartData.itemsCount || 'N/A'}</li>
+            <li><strong>Vendor:</strong> ${cartData.vendorName || 'N/A'}</li>
+            <li><strong>Date:</strong> ${cartData.createdAt || new Date().toLocaleDateString()}</li>
+          </ul>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getPasswordResetOTPTemplate(userName: string, otp: string): EmailTemplate {
+    return {
+      subject: 'Password Reset OTP',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #dc3545; text-align: center;">Password Reset OTP</h1>
+          <p>Hi ${userName},</p>
+          <p>You requested to reset your password. Use the following OTP to proceed:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <div style="background: #f8f9fa; border: 2px solid #dc3545; padding: 20px; border-radius: 10px; display: inline-block;">
+              <h2 style="color: #dc3545; margin: 0; font-size: 32px; letter-spacing: 5px;">${otp}</h2>
+            </div>
+          </div>
+          <p>This OTP will expire in 10 minutes.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getPartnerSignupNotificationTemplate(partnerName: string): EmailTemplate {
+    return {
+      subject: 'Partnership Request Under Review',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ffc107; text-align: center;">Partnership Request Received</h1>
+          <p>Hi ${partnerName},</p>
+          <p>Thank you for your interest in partnering with Urembo Hub!</p>
+          <p>Your partnership request has been received and is currently under review by our team.</p>
+          <p>We will notify you once the review is complete, typically within 2-3 business days.</p>
+          <p>In the meantime, you can complete your profile setup to expedite the process.</p>
+          <p>Best regards,<br>The Urembo Hub Team</p>
+        </div>
+      `
+    };
+  }
+
+  private getPartnerApprovalTemplate(partnerName: string, approved: boolean, reason?: string): EmailTemplate {
+    const isApproved = approved;
+    const color = isApproved ? '#28a745' : '#dc3545';
+    const title = isApproved ? 'Partnership Approved!' : 'Partnership Request Update';
+    
+    return {
+      subject: title,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: ${color}; text-align: center;">${title}</h1>
+          <p>Hi ${partnerName},</p>
+          ${isApproved ? `
+            <p>Congratulations! Your partnership request has been approved.</p>
+            <p>You can now start using all the features available to partners on our platform.</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="https://urembohub.com/partner-dashboard" style="background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Access Partner Dashboard</a>
+            </div>
+          ` : `
+            <p>Thank you for your interest in partnering with Urembo Hub.</p>
+            <p>Unfortunately, we cannot approve your partnership request at this time.</p>
+            ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+            <p>You may reapply in the future once you have addressed the concerns mentioned above.</p>
+          `}
           <p>Best regards,<br>The Urembo Hub Team</p>
         </div>
       `

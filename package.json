@@ -27,6 +27,7 @@
     "db:seed:onboarding": "ts-node prisma/seed-onboarding.ts",
     "db:seed:admin": "ts-node prisma/seed-admin.ts",
     "db:seed:all": "ts-node prisma/seed-all.ts",
+    "db:seed:test-data": "ts-node scripts/seed-test-data.ts",
     "db:studio": "prisma studio",
     "test:emails": "ts-node src/scripts/test-emails.ts",
     "test:emails:auth": "ts-node src/scripts/test-auth-emails.ts",
@@ -41,7 +42,8 @@
     "test:escrow:mock": "ts-node src/scripts/test-escrow-simple-mock.ts",
     "test:paystack:subaccounts": "ts-node src/scripts/test-paystack-subaccounts.ts",
     "test:split:payments": "ts-node src/scripts/test-split-payments.ts",
-    "setup:ngrok": "ts-node src/scripts/setup-ngrok.ts"
+    "setup:ngrok": "ts-node src/scripts/setup-ngrok.ts",
+    "test:communication": "ts-node src/scripts/test-communication-service.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

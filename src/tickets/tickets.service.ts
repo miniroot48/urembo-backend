@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AdminNotificationService } from '../admin/admin-notification.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { CreateTicketResponseDto } from './dto/create-ticket-response.dto';
 
 @Injectable()
 export class TicketsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private adminNotificationService: AdminNotificationService,
+  ) {}
 
   // Generate unique ticket number
   private generateTicketNumber(): string {
@@ -299,6 +303,23 @@ export class TicketsService {
 
     // Create audit log
     await this.createAuditLog(ticket.id, 'TICKET_CREATED', userId, null, 'open');
+
+    // Send admin notification
+    try {
+      await this.adminNotificationService.notifyAdminsOfTicket({
+        id: ticket.id,
+        subject: ticket.title,
+        priority: ticket.priority,
+        category: ticket.category?.name || 'N/A',
+        userName: ticket.createdByProfile?.fullName || 'N/A',
+        userEmail: ticket.createdByProfile?.email || 'N/A',
+        description: ticket.description,
+        createdAt: ticket.createdAt,
+      });
+    } catch (error) {
+      console.error('Failed to send admin ticket notification:', error);
+      // Don't fail ticket creation if admin notification fails
+    }
 
     return ticket;
   }

@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../email/email.service';
+import { AdminNotificationService } from '../admin/admin-notification.service';
 import { user_role } from '@prisma/client';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -15,6 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private emailService: EmailService,
+    private adminNotificationService: AdminNotificationService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -96,13 +98,43 @@ export class AuthService {
 
     // Send welcome email
     try {
-      await this.emailService.sendAccountCreatedEmail(
+      await this.emailService.sendWelcomeEmail(
         user.email,
         user.fullName || 'User'
       );
     } catch (error) {
       console.error('Failed to send welcome email:', error);
       // Don't fail registration if email fails
+    }
+
+    // Send admin notification for signup
+    try {
+      await this.adminNotificationService.notifyAdminsOfSignup({
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        businessName: user.businessName,
+        createdAt: user.createdAt,
+      });
+    } catch (error) {
+      console.error('Failed to send admin signup notification:', error);
+      // Don't fail registration if admin notification fails
+    }
+
+    // Send partner-specific notifications
+    if (user.role === 'vendor' || user.role === 'retailer' || user.role === 'manufacturer') {
+      try {
+        await this.adminNotificationService.notifyPartnerSignup({
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          businessName: user.businessName,
+          createdAt: user.createdAt,
+        });
+      } catch (error) {
+        console.error('Failed to send partner signup notification:', error);
+        // Don't fail registration if partner notification fails
+      }
     }
 
     const payload = { email: user.email, sub: user.id, role: user.role };
