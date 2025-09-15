@@ -61,11 +61,11 @@ export class EmailService {
   async sendEmail(options: SendEmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       const { data, error } = await this.resend.emails.send({
-        from: options.from || 'Urembo Hub <noreply@allrentals.app>',
+        from: options.from || 'Urembo Hub <noreply@urembohub.com>',
         to: [options.to],
         subject: options.subject,
         html: options.html,
-        replyTo: options.replyTo || 'support@allrentals.app',
+        replyTo: options.replyTo || 'support@urembohub.com',
       });
 
       if (error) {
