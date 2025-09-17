@@ -17,12 +17,10 @@ export class UpdateCmsPageBannerDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   imageUrl?: string;
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   mobileImageUrl?: string;
 
   @IsOptional()

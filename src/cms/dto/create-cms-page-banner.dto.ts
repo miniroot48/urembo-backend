@@ -14,12 +14,10 @@ export class CreateCmsPageBannerDto {
   subtitle?: string;
 
   @IsString()
-  @IsUrl()
   imageUrl: string;
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   mobileImageUrl?: string;
 
   @IsOptional()
