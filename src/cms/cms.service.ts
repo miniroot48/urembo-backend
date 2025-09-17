@@ -440,17 +440,26 @@ export class CmsService {
   async updateThemeSetting(settingKey: string, userRole: user_role, settingValue: string) {
     this.checkAdminAccess(userRole);
 
-    const existingSetting = await this.prisma.cmsThemeSetting.findUnique({
-      where: { settingKey },
-    });
+    // Determine setting type based on key
+    const getSettingType = (key: string): string => {
+      if (key.includes('color')) return 'color';
+      if (key.includes('font') || key.includes('size')) return 'font_size';
+      if (key.includes('radius')) return 'radius';
+      if (key.includes('mode')) return 'mode';
+      return 'color'; // default
+    };
 
-    if (!existingSetting) {
-      throw new NotFoundException('Theme setting not found');
-    }
-
-    return this.prisma.cmsThemeSetting.update({
+    // Upsert: update if exists, create if not
+    return this.prisma.cmsThemeSetting.upsert({
       where: { settingKey },
-      data: { settingValue },
+      update: { settingValue },
+      create: {
+        settingKey,
+        settingValue,
+        settingType: getSettingType(settingKey),
+        description: `Theme setting for ${settingKey}`,
+        isActive: true,
+      },
     });
   }
 
