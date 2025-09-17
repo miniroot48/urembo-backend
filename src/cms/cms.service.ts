@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UploadService } from '../upload/upload.service';
 import { user_role } from '@prisma/client';
 import {
   CreateCmsBannerDto,
@@ -26,7 +27,10 @@ import {
 
 @Injectable()
 export class CmsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private uploadService: UploadService,
+  ) {}
 
   // Helper method to check admin access
   private checkAdminAccess(userRole: user_role) {
@@ -104,6 +108,18 @@ export class CmsService {
 
     if (!existingBanner) {
       throw new NotFoundException('Banner not found');
+    }
+
+    // Delete associated images
+    try {
+      if (existingBanner.imageUrl) {
+        await this.uploadService.deleteImage(existingBanner.imageUrl);
+      }
+      if (existingBanner.mobileImageUrl) {
+        await this.uploadService.deleteImage(existingBanner.mobileImageUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to delete some images for banner:', error);
     }
 
     return this.prisma.cmsBanner.delete({
@@ -316,6 +332,18 @@ export class CmsService {
 
     if (!existingBanner) {
       throw new NotFoundException('Page banner not found');
+    }
+
+    // Delete associated images
+    try {
+      if (existingBanner.imageUrl) {
+        await this.uploadService.deleteImage(existingBanner.imageUrl);
+      }
+      if (existingBanner.mobileImageUrl) {
+        await this.uploadService.deleteImage(existingBanner.mobileImageUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to delete some images for page banner:', error);
     }
 
     return this.prisma.cmsPageBanner.delete({
@@ -559,6 +587,18 @@ export class CmsService {
       throw new NotFoundException('Category banner not found');
     }
 
+    // Delete associated images
+    try {
+      if (existingBanner.imageUrl) {
+        await this.uploadService.deleteImage(existingBanner.imageUrl);
+      }
+      if (existingBanner.mobileImageUrl) {
+        await this.uploadService.deleteImage(existingBanner.mobileImageUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to delete some images for category banner:', error);
+    }
+
     return this.prisma.cmsCategoryBanner.delete({
       where: { id },
     });
@@ -629,6 +669,15 @@ export class CmsService {
 
     if (!existingCategory) {
       throw new NotFoundException('Category not found');
+    }
+
+    // Delete associated image
+    try {
+      if (existingCategory.imageUrl) {
+        await this.uploadService.deleteImage(existingCategory.imageUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to delete image for category:', error);
     }
 
     return this.prisma.cmsCategory.delete({
@@ -702,6 +751,15 @@ export class CmsService {
 
     if (!existingCard) {
       throw new NotFoundException('Promotional card not found');
+    }
+
+    // Delete associated image
+    try {
+      if (existingCard.imageUrl) {
+        await this.uploadService.deleteImage(existingCard.imageUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to delete image for promotional card:', error);
     }
 
     return this.prisma.cmsPromotionalCard.delete({
@@ -821,6 +879,15 @@ export class CmsService {
 
     if (!existingPage) {
       throw new NotFoundException('CMS page not found');
+    }
+
+    // Delete associated PDF file
+    try {
+      if (existingPage.pdfUrl) {
+        await this.uploadService.deleteImage(existingPage.pdfUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to delete PDF file for page:', error);
     }
 
     return this.prisma.cmsPages.delete({

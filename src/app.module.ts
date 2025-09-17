@@ -26,6 +26,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { PasswordResetModule } from './auth/password-reset.module';
 import { AdminModule } from './admin/admin.module';
 import { StaffAssignmentsModule } from './staff-assignments/staff-assignments.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { StaffAssignmentsModule } from './staff-assignments/staff-assignments.mo
     PasswordResetModule,
     AdminModule,
     StaffAssignmentsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,8 +1,7 @@
-import { IsString, IsOptional, IsBoolean, IsInt, IsIn, IsArray, IsDateString, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsInt, IsIn, IsArray, IsDateString, Min } from 'class-validator';
 
 export class CreateCmsPopupDto {
   @IsString()
-  @Max(255)
   title: string;
 
   @IsString()
