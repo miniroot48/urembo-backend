@@ -3,6 +3,19 @@ import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+// Helper function to get role-specific avatar URLs
+function getAvatarUrl(role: string): string {
+  const avatarMap: { [key: string]: string } = {
+    'vendor': 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'retailer': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'manufacturer': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'admin': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'client': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+  };
+  
+  return avatarMap[role] || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+}
+
 // Import seed functions
 async function createAdminUser() {
   console.log('👤 Creating admin user...');
@@ -29,6 +42,7 @@ async function createAdminUser() {
         businessDescription: 'Platform administrator for Urembo Hub marketplace',
         isVerified: true,
         onboardingStatus: 'approved' as any,
+        avatarUrl: getAvatarUrl('admin'),
       },
     });
 
@@ -54,8 +68,9 @@ async function createTestUsers() {
       businessDescription: 'Professional beauty and wellness services',
       businessAddress: '123 Beauty Street, Nairobi, Kenya',
       businessPhone: '+254700000001',
-      isVerified: false,
-      onboardingStatus: 'pending' as any,
+      isVerified: true,
+      onboardingStatus: 'approved' as any,
+      avatarUrl: getAvatarUrl('vendor'),
     },
     {
       email: 'retailer@test.com',
@@ -66,8 +81,9 @@ async function createTestUsers() {
       businessDescription: 'Retail store specializing in beauty products',
       businessAddress: '456 Retail Avenue, Nairobi, Kenya',
       businessPhone: '+254700000002',
-      isVerified: false,
-      onboardingStatus: 'pending' as any,
+      isVerified: true,
+      onboardingStatus: 'approved' as any,
+      avatarUrl: getAvatarUrl('retailer'),
     },
     {
       email: 'manufacturer@test.com',
@@ -78,8 +94,9 @@ async function createTestUsers() {
       businessDescription: 'Manufacturer of high-quality beauty products',
       businessAddress: '789 Factory Road, Nairobi, Kenya',
       businessPhone: '+254700000003',
-      isVerified: false,
-      onboardingStatus: 'pending' as any,
+      isVerified: true,
+      onboardingStatus: 'approved' as any,
+      avatarUrl: getAvatarUrl('manufacturer'),
     },
     {
       email: 'client@test.com',
@@ -92,6 +109,7 @@ async function createTestUsers() {
       businessPhone: null,
       isVerified: true,
       onboardingStatus: 'approved' as any,
+      avatarUrl: getAvatarUrl('client'),
     },
   ];
 

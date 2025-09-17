@@ -4,6 +4,20 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Helper function to get service category-specific image URLs
+function getServiceCategoryImageUrl(categoryName: string): string {
+  const imageMap: { [key: string]: string } = {
+    'Hair Services': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Beauty Services': 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Nail Services': 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Body Treatments': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkhZ5PKFrpNdSYOED19CyH9J_YBu3WdA8McQ&s',
+    'Men\'s Grooming': 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Wellness & Spa': 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+  };
+  
+  return imageMap[categoryName] || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80';
+}
+
 const serviceCategories = [
   // Level 1 - Main Service Categories
   {
@@ -296,6 +310,7 @@ async function seedServiceCategories() {
           level: category.level,
           position: category.position,
           isActive: category.isActive,
+          imageUrl: getServiceCategoryImageUrl(category.name),
         },
       });
 
@@ -323,6 +338,7 @@ async function seedServiceCategories() {
             parentId: createdCategory.id,
             position: subcategory.position,
             isActive: true,
+            imageUrl: getServiceCategoryImageUrl(category.name), // Use parent category image
           },
         });
 
@@ -350,6 +366,7 @@ async function seedServiceCategories() {
               parentId: createdSubcategory.id,
               position: actualService.position,
               isActive: true,
+              imageUrl: getServiceCategoryImageUrl(category.name), // Use parent category image
             },
           });
 

@@ -62,6 +62,13 @@ export class ServicesService {
             businessName: true,
           },
         },
+        serviceCategory: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });

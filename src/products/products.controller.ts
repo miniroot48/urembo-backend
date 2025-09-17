@@ -42,6 +42,14 @@ export class ProductsController {
     return this.productsService.getProductCategoryById(id);
   }
 
+  @Get('top-selling')
+  async getTopSellingProducts(
+    @Query('limit') limit?: string,
+  ) {
+    const limitNum = limit ? parseInt(limit, 10) : 4;
+    return this.productsService.getTopSellingProducts(limitNum);
+  }
+
   @Get(':id')
   async getProductById(@Param('id') id: string) {
     return this.productsService.getProductById(id);

@@ -794,6 +794,24 @@ CREATE TABLE "public"."cms_pages" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."cms_partner_sections" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "subtitle" TEXT,
+    "background_image" TEXT,
+    "cta1_text" TEXT,
+    "cta1_link" TEXT,
+    "cta2_text" TEXT,
+    "cta2_link" TEXT,
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cms_partner_sections_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."live_shopping_sessions" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,

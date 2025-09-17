@@ -4,6 +4,22 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Helper function to get category-specific image URLs
+function getCategoryImageUrl(categoryName: string): string {
+  const imageMap: { [key: string]: string } = {
+    'Hair Care': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Skincare': 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Makeup': 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Body Care': 'https://cdn.mafrservices.com/pim-content/KEN/media/product/214922/214922_main.jpg',
+    'Fragrance': 'https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Nail Care': 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Men\'s Grooming': 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    'Tools & Accessories': 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+  };
+  
+  return imageMap[categoryName] || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80';
+}
+
 const beautyCategories = [
   // Level 1 - Main Categories
   {
@@ -154,6 +170,7 @@ async function seedBeautyCategories() {
           level: category.level,
           position: category.position,
           isActive: category.isActive,
+          imageUrl: getCategoryImageUrl(category.name),
         },
       });
 
@@ -170,15 +187,16 @@ async function seedBeautyCategories() {
           .replace(/[^a-z0-9-]/g, '');
 
         const createdSubcategory = await prisma.productCategory.create({
-          data: {
-            name: subcategory.name,
-            description: subcategory.description,
-            slug: subSlug,
-            level: 2,
-            parentId: createdCategory.id,
-            position: subcategory.position,
-            isActive: true,
-          },
+        data: {
+          name: subcategory.name,
+          description: subcategory.description,
+          slug: subSlug,
+          level: 2,
+          parentId: createdCategory.id,
+          position: subcategory.position,
+          isActive: true,
+          imageUrl: getCategoryImageUrl(category.name), // Use parent category image
+        },
         });
 
         console.log(`  ✅ Created subcategory: ${createdSubcategory.name} (ID: ${createdSubcategory.id})`);

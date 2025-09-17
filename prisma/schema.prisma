@@ -1001,6 +1001,23 @@ model CmsPages {
   @@map("cms_pages")
 }
 
+model CMSPartnerSection {
+  id              String    @id @default(uuid())
+  title           String
+  subtitle         String?
+  backgroundImage  String?   @map("background_image")
+  cta1Text        String?    @map("cta1_text")
+  cta1Link        String?    @map("cta1_link")
+  cta2Text        String?    @map("cta2_text")
+  cta2Link        String?    @map("cta2_link")
+  position        Int       @default(0)
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("cms_partner_sections")
+}
+
 // Live Shopping Models
 model LiveShoppingSession {
   id                String    @id @default(uuid())

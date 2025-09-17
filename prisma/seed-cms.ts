@@ -17,6 +17,7 @@ async function main() {
   await prisma.cmsFooterContent.deleteMany();
   await prisma.cmsFeaturedItem.deleteMany();
   await prisma.cmsBanner.deleteMany();
+  await prisma.cMSPartnerSection.deleteMany();
 
   // 1. Insert default footer content
   console.log('📄 Seeding footer content...');
@@ -449,6 +450,35 @@ You have the right to:
 If you have any questions about this Privacy Policy, please contact us at privacy@urembo.hub.
         `,
         contentType: 'text',
+        isActive: true,
+      },
+    ],
+  });
+
+  // 8. Insert default partner sections
+  console.log('🤝 Seeding partner sections...');
+  await prisma.cMSPartnerSection.createMany({
+    data: [
+      {
+        title: 'Grow Your Beauty Business Today',
+        subtitle: 'Showcase your services or products to a ready audience, increase your visibility and grow your brand all in one place.',
+        backgroundImage: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80',
+        cta1Text: 'Join as a Partner',
+        cta1Link: '/auth',
+        cta2Text: 'Explore Products',
+        cta2Link: '/shop',
+        position: 1,
+        isActive: true,
+      },
+      {
+        title: 'Discover Amazing Beauty Services',
+        subtitle: 'Find the perfect beauty services near you. From hair styling to skincare, connect with professional beauty experts.',
+        backgroundImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80',
+        cta1Text: 'Browse Services',
+        cta1Link: '/services',
+        cta2Text: 'Book Appointment',
+        cta2Link: '/appointments',
+        position: 2,
         isActive: true,
       },
     ],

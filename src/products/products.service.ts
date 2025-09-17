@@ -686,4 +686,120 @@ export class ProductsService {
       };
     }
   }
+
+  async getTopSellingProducts(limit: number = 4) {
+    try {
+      // Get top-selling products based on total quantity sold from OrderItems
+      const topSellingProducts = await this.prisma.orderItem.groupBy({
+        by: ['productId'],
+        _sum: {
+          quantity: true,
+          totalPrice: true,
+        },
+        _count: {
+          id: true,
+        },
+        where: {
+          order: {
+            status: {
+              in: ['completed', 'delivered'],
+            },
+          },
+        },
+        orderBy: {
+          _sum: {
+            quantity: 'desc',
+          },
+        },
+        take: limit,
+      });
+
+      // If no sales data, return most recently created products as fallback
+      if (topSellingProducts.length === 0) {
+        const fallbackProducts = await this.prisma.product.findMany({
+          where: {
+            isActive: true,
+          },
+          include: {
+            retailer: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true,
+                businessName: true,
+              },
+            },
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: limit,
+        });
+
+        return fallbackProducts.map(product => ({
+          ...product,
+          salesData: {
+            totalQuantitySold: 0,
+            totalRevenue: 0,
+            orderCount: 0,
+          },
+        }));
+      }
+
+      // Get detailed product information for each top-selling product
+      const productIds = topSellingProducts.map(item => item.productId);
+      
+      const products = await this.prisma.product.findMany({
+        where: {
+          id: { in: productIds },
+          isActive: true,
+        },
+        include: {
+          retailer: {
+            select: {
+              id: true,
+              email: true,
+              fullName: true,
+              businessName: true,
+            },
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              description: true,
+            },
+          },
+        },
+      });
+
+      // Combine sales data with product information
+      const productsWithSalesData = products.map(product => {
+        const salesData = topSellingProducts.find(item => item.productId === product.id);
+        return {
+          ...product,
+          salesData: {
+            totalQuantitySold: salesData?._sum.quantity || 0,
+            totalRevenue: salesData?._sum.totalPrice || 0,
+            orderCount: salesData?._count.id || 0,
+          },
+        };
+      });
+
+      // Sort by total quantity sold
+      return productsWithSalesData.sort((a, b) => b.salesData.totalQuantitySold - a.salesData.totalQuantitySold);
+    } catch (error) {
+      console.error('Error in getTopSellingProducts:', error);
+      throw new NotFoundException('Failed to fetch top-selling products');
+    }
+  }
 }

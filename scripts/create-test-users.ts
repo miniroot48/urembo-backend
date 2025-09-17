@@ -3,6 +3,19 @@ import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+// Helper function to get role-specific avatar URLs
+function getAvatarUrl(role: string): string {
+  const avatarMap: { [key: string]: string } = {
+    'vendor': 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'retailer': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'manufacturer': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'admin': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+    'client': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+  };
+  
+  return avatarMap[role] || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+}
+
 async function createTestUsers() {
   console.log('👥 Creating test users...');
 
@@ -38,6 +51,7 @@ async function createTestUsers() {
         businessDescription: 'Professional beauty services for testing',
         isVerified: true,
         onboardingStatus: 'approved' as any,
+        avatarUrl: getAvatarUrl('vendor'),
       }
     });
 
@@ -54,6 +68,7 @@ async function createTestUsers() {
         businessDescription: 'Beauty products retail store for testing',
         isVerified: true,
         onboardingStatus: 'approved' as any,
+        avatarUrl: getAvatarUrl('retailer'),
       }
     });
 
@@ -70,6 +85,7 @@ async function createTestUsers() {
         businessDescription: 'Beauty products manufacturing for testing',
         isVerified: true,
         onboardingStatus: 'approved' as any,
+        avatarUrl: getAvatarUrl('manufacturer'),
       }
     });
 
