@@ -1,39 +1,40 @@
-import { IsString, IsOptional, IsBoolean, IsInt, IsUrl, MaxLength, Min } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsInt, Min, MaxLength } from 'class-validator';
 
-export class CreateCmsBannerDto {
+export class UpdateCmsPartnerSectionDto {
+  @IsOptional()
   @IsString()
   @MaxLength(255)
-  title: string;
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  subtitle?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(500)
-  subtitle?: string;
-
-  @IsString()
-  imageUrl: string;
-
-  @IsOptional()
-  @IsString()
-  mobileImageUrl?: string;
+  backgroundImage?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(100)
-  ctaText?: string;
+  cta1Text?: string;
 
   @IsOptional()
   @IsString()
-  ctaLink?: string;
+  @MaxLength(500)
+  cta1Link?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(100)
-  secondaryCtaText?: string;
+  cta2Text?: string;
 
   @IsOptional()
   @IsString()
-  secondaryCtaLink?: string;
+  @MaxLength(500)
+  cta2Link?: string;
 
   @IsOptional()
   @IsInt()

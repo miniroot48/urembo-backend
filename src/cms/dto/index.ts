@@ -18,3 +18,5 @@ export { CreateCmsPromotionalCardDto } from './create-cms-promotional-card.dto';
 export { UpdateCmsPromotionalCardDto } from './update-cms-promotional-card.dto';
 export { CreateCmsPagesDto } from './create-cms-pages.dto';
 export { UpdateCmsPagesDto } from './update-cms-pages.dto';
+export { CreateCmsPartnerSectionDto } from './create-cms-partner-section.dto';
+export { UpdateCmsPartnerSectionDto } from './update-cms-partner-section.dto';

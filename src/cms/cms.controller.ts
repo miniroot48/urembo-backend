@@ -33,6 +33,8 @@ import {
   UpdateCmsPromotionalCardDto,
   CreateCmsPagesDto,
   UpdateCmsPagesDto,
+  CreateCmsPartnerSectionDto,
+  UpdateCmsPartnerSectionDto,
 } from './dto';
 
 @Controller('cms')
@@ -451,6 +453,46 @@ export class CmsController {
     @Request() req: any,
   ) {
     return this.cmsService.deleteCmsPage(id, req.user.role);
+  }
+
+  // Partner Section Management Endpoints
+  @UseGuards(JwtAuthGuard)
+  @Post('partner-sections')
+  async createPartnerSection(
+    @Body() createPartnerSectionDto: CreateCmsPartnerSectionDto,
+    @Request() req: any,
+  ) {
+    return this.cmsService.createPartnerSection(req.user.role, createPartnerSectionDto);
+  }
+
+  @Get('partner-sections')
+  async getAllPartnerSections(@Query('isActive') isActive?: string) {
+    const isActiveBool = isActive === undefined ? undefined : isActive === 'true';
+    return this.cmsService.getAllPartnerSections(isActiveBool);
+  }
+
+  @Get('partner-sections/:id')
+  async getPartnerSectionById(@Param('id') id: string) {
+    return this.cmsService.getPartnerSectionById(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('partner-sections/:id')
+  async updatePartnerSection(
+    @Param('id') id: string,
+    @Body() updatePartnerSectionDto: UpdateCmsPartnerSectionDto,
+    @Request() req: any,
+  ) {
+    return this.cmsService.updatePartnerSection(id, req.user.role, updatePartnerSectionDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('partner-sections/:id')
+  async deletePartnerSection(
+    @Param('id') id: string,
+    @Request() req: any,
+  ) {
+    return this.cmsService.deletePartnerSection(id, req.user.role);
   }
 
   // Utility endpoint to get all CMS data

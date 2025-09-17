@@ -18,7 +18,6 @@ export class UpdateCmsPromotionalCardDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   imageUrl?: string;
 
   @IsOptional()
@@ -28,7 +27,6 @@ export class UpdateCmsPromotionalCardDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   ctaLink?: string;
 
   @IsOptional()

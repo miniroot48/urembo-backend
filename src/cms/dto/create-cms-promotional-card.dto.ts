@@ -16,7 +16,6 @@ export class CreateCmsPromotionalCardDto {
   description?: string;
 
   @IsString()
-  @IsUrl()
   imageUrl: string;
 
   @IsOptional()
@@ -26,7 +25,6 @@ export class CreateCmsPromotionalCardDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   ctaLink?: string;
 
   @IsOptional()

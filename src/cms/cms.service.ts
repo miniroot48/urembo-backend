@@ -23,6 +23,8 @@ import {
   UpdateCmsPromotionalCardDto,
   CreateCmsPagesDto,
   UpdateCmsPagesDto,
+  CreateCmsPartnerSectionDto,
+  UpdateCmsPartnerSectionDto,
 } from './dto';
 
 @Injectable()
@@ -51,6 +53,8 @@ export class CmsService {
         mobileImageUrl: createBannerDto.mobileImageUrl,
         ctaText: createBannerDto.ctaText,
         ctaLink: createBannerDto.ctaLink,
+        secondaryCtaText: createBannerDto.secondaryCtaText,
+        secondaryCtaLink: createBannerDto.secondaryCtaLink,
         position: createBannerDto.position || 0,
         isActive: createBannerDto.isActive !== undefined ? createBannerDto.isActive : true,
       },
@@ -886,6 +890,98 @@ export class CmsService {
     }
 
     return this.prisma.cmsPages.delete({
+      where: { id },
+    });
+  }
+
+  // Partner Section Management
+  async createPartnerSection(userRole: user_role, createPartnerSectionDto: CreateCmsPartnerSectionDto) {
+    this.checkAdminAccess(userRole);
+
+    return this.prisma.cmsPartnerSection.create({
+      data: {
+        title: createPartnerSectionDto.title,
+        subtitle: createPartnerSectionDto.subtitle,
+        backgroundImage: createPartnerSectionDto.backgroundImage,
+        cta1Text: createPartnerSectionDto.cta1Text,
+        cta1Link: createPartnerSectionDto.cta1Link,
+        cta2Text: createPartnerSectionDto.cta2Text,
+        cta2Link: createPartnerSectionDto.cta2Link,
+        position: createPartnerSectionDto.position || 0,
+        isActive: createPartnerSectionDto.isActive !== undefined ? createPartnerSectionDto.isActive : true,
+      },
+    });
+  }
+
+  async getAllPartnerSections(isActive?: boolean) {
+    const where = isActive !== undefined ? { isActive } : {};
+    
+    return this.prisma.cmsPartnerSection.findMany({
+      where,
+      orderBy: { position: 'asc' },
+    });
+  }
+
+  async getPartnerSectionById(id: string) {
+    const partnerSection = await this.prisma.cmsPartnerSection.findUnique({
+      where: { id },
+    });
+
+    if (!partnerSection) {
+      throw new NotFoundException('Partner section not found');
+    }
+
+    return partnerSection;
+  }
+
+  async updatePartnerSection(id: string, userRole: user_role, updatePartnerSectionDto: UpdateCmsPartnerSectionDto) {
+    this.checkAdminAccess(userRole);
+
+    const existingPartnerSection = await this.prisma.cmsPartnerSection.findUnique({
+      where: { id },
+    });
+
+    if (!existingPartnerSection) {
+      throw new NotFoundException('Partner section not found');
+    }
+
+    return this.prisma.cmsPartnerSection.update({
+      where: { id },
+      data: {
+        ...(updatePartnerSectionDto.title !== undefined && { title: updatePartnerSectionDto.title }),
+        ...(updatePartnerSectionDto.subtitle !== undefined && { subtitle: updatePartnerSectionDto.subtitle }),
+        ...(updatePartnerSectionDto.backgroundImage !== undefined && { backgroundImage: updatePartnerSectionDto.backgroundImage }),
+        ...(updatePartnerSectionDto.cta1Text !== undefined && { cta1Text: updatePartnerSectionDto.cta1Text }),
+        ...(updatePartnerSectionDto.cta1Link !== undefined && { cta1Link: updatePartnerSectionDto.cta1Link }),
+        ...(updatePartnerSectionDto.cta2Text !== undefined && { cta2Text: updatePartnerSectionDto.cta2Text }),
+        ...(updatePartnerSectionDto.cta2Link !== undefined && { cta2Link: updatePartnerSectionDto.cta2Link }),
+        ...(updatePartnerSectionDto.position !== undefined && { position: updatePartnerSectionDto.position }),
+        ...(updatePartnerSectionDto.isActive !== undefined && { isActive: updatePartnerSectionDto.isActive }),
+      },
+    });
+  }
+
+  async deletePartnerSection(id: string, userRole: user_role) {
+    this.checkAdminAccess(userRole);
+
+    const existingPartnerSection = await this.prisma.cmsPartnerSection.findUnique({
+      where: { id },
+    });
+
+    if (!existingPartnerSection) {
+      throw new NotFoundException('Partner section not found');
+    }
+
+    // Delete associated background image
+    try {
+      if (existingPartnerSection.backgroundImage) {
+        await this.uploadService.deleteImage(existingPartnerSection.backgroundImage);
+      }
+    } catch (error) {
+      console.warn('Failed to delete background image for partner section:', error);
+    }
+
+    return this.prisma.cmsPartnerSection.delete({
       where: { id },
     });
   }

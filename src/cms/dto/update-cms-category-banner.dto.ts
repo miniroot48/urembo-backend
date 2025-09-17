@@ -17,12 +17,10 @@ export class UpdateCmsCategoryBannerDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   imageUrl?: string;
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   mobileImageUrl?: string;
 
   @IsOptional()
@@ -32,7 +30,6 @@ export class UpdateCmsCategoryBannerDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   ctaUrl?: string;
 
   @IsOptional()

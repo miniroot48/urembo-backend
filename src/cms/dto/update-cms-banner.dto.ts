@@ -13,12 +13,10 @@ export class UpdateCmsBannerDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   imageUrl?: string;
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   mobileImageUrl?: string;
 
   @IsOptional()
@@ -28,8 +26,16 @@ export class UpdateCmsBannerDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   ctaLink?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  secondaryCtaText?: string;
+
+  @IsOptional()
+  @IsString()
+  secondaryCtaLink?: string;
 
   @IsOptional()
   @IsInt()

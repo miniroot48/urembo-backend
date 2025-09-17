@@ -14,12 +14,10 @@ export class CreateCmsCategoryBannerDto {
   subtitle?: string;
 
   @IsString()
-  @IsUrl()
   imageUrl: string;
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   mobileImageUrl?: string;
 
   @IsOptional()
@@ -29,7 +27,6 @@ export class CreateCmsCategoryBannerDto {
 
   @IsOptional()
   @IsString()
-  @IsUrl()
   ctaUrl?: string;
 
   @IsOptional()
