@@ -48,17 +48,35 @@ export interface SendEmailOptions {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private resend: Resend;
+  private resend: Resend | null = null;
+  private isEmailServiceAvailable = false;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('RESEND_API_KEY');
     if (!apiKey) {
-      this.logger.warn('RESEND_API_KEY not found in environment variables');
+      this.logger.warn('RESEND_API_KEY not found in environment variables. Email service will be disabled.');
+      this.isEmailServiceAvailable = false;
+    } else {
+      try {
+        this.resend = new Resend(apiKey);
+        this.isEmailServiceAvailable = true;
+        this.logger.log('Email service initialized successfully');
+      } catch (error) {
+        this.logger.error('Failed to initialize email service:', error);
+        this.isEmailServiceAvailable = false;
+      }
     }
-    this.resend = new Resend(apiKey);
   }
 
   async sendEmail(options: SendEmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    if (!this.isEmailServiceAvailable || !this.resend) {
+      this.logger.warn(`Email service is not available. Email to ${options.to} with subject "${options.subject}" was not sent.`);
+      return { 
+        success: false, 
+        error: 'Email service is not available. Please check RESEND_API_KEY configuration.' 
+      };
+    }
+
     try {
       const { data, error } = await this.resend.emails.send({
         from: options.from || 'Urembo Hub <noreply@urembohub.com>',
@@ -82,6 +100,26 @@ export class EmailService {
         error: error instanceof Error ? error.message : 'Unknown error' 
       };
     }
+  }
+
+  /**
+   * Check if the email service is available
+   */
+  isAvailable(): boolean {
+    return this.isEmailServiceAvailable;
+  }
+
+  /**
+   * Get the status of the email service
+   */
+  getStatus(): { available: boolean; reason?: string } {
+    if (this.isEmailServiceAvailable) {
+      return { available: true };
+    }
+    return { 
+      available: false, 
+      reason: 'RESEND_API_KEY not configured or invalid' 
+    };
   }
 
   // Authentication Emails
